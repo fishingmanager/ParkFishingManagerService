@@ -1,0 +1,5 @@
+adb shell
+su
+chmod -R 777 /data
+adb root
+adb pull /data/data/com.fishing.namtran.fishingmanagerservice/databases/FeedReader.db

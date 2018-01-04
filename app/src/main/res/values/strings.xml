@@ -1,0 +1,58 @@
+<resources>
+    <string name="app_name">Quản Lý Câu Cá</string>
+
+    <!-- Strings related to login -->
+    <string name="prompt_email">Email</string>
+    <string name="prompt_password">Mật Khẩu</string>
+    <string name="action_sign_in">Đăng Nhập</string>
+    <string name="action_sign_in_short">Sign in</string>
+    <string name="error_invalid_email">Địa chỉ email không hợp lệ</string>
+    <string name="error_invalid_password">Mật khẩu quá ngắn</string>
+    <string name="error_incorrect_password">Mật khẩu không đúng</string>
+    <string name="error_field_required">Bắt buộc nhập</string>
+    <string name="permission_rationale">"Contacts permissions are needed for providing email completions."</string>
+    <string name="invalid_account">Tài khoản này bị lỗi. Vui lòng nhập lại hoặc thử với tài khoản khác.</string>
+    <string name="action_error">Lưu dữ liệu không thành công.</string>
+    <string name="fishing_status">Khách hàng này đang tham gia câu.</string>
+
+    <string name="number_fishing">Mã Số</string>
+    <string name="fullname">Họ Tên</string>
+    <string name="mobile">Điện Thoại</string>
+    <string name="date_in">Giờ Vào</string>
+    <string name="date_out">Giờ Ra</string>
+    <string name="keep_hours">Gửi Giờ</string>
+    <string name="no_keep_hours">Trả Giờ</string>
+    <string name="total_hours">Tổng Giờ</string>
+    <string name="keep_fish">Gửi Cá (kg)</string>
+    <string name="take_fish">Lấy Cá (kg)</string>
+    <string name="total_fish">Tổng Cá</string>
+    <string name="total_money">Tổng Tiền</string>
+    <string name="note">Ghi Chú</string>
+    <string name="package_fishing">Suất (Giờ)</string>
+    <string name="price">Giá Cá</string>
+    <string name="action_submit_short">Đồng Ý</string>
+    <string name="error_invalid_mobile">Điện Thoại Quá Ngắn. Nhập Ít Nhất Là 4 Số</string>
+    <string name="yes">Có</string>
+    <string name="no">Không</string>
+    <string name="update_status">Cập Nhật Khách Hàng</string>
+    <string name="fee_do_fish">Phí Làm Cá</string>
+    <string name="total_all">Tổng</string>
+    <string name="log">Lich Sử</string>
+    <string name="buy_fish">Mua Cá</string>
+
+    <string name="customer_manager">Quản Lý KH</string>
+    <string name="report">Báo Cáo</string>
+    <string name="add_customer">Thêm KH</string>
+    <string name="logout">Thoát</string>
+    <string name="settings">Cài Đặt</string>
+
+    <string name="table_original">Table Original</string>
+    <string name="table_basic">Table Basic</string>
+    <string name="table_original_sortable">Table Original Sortable</string>
+    <string name="order_sections_asc">Order sections ASC</string>
+    <string name="title_activity_add_new_customer">Thêm Khách Câu</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="title_activity_settings">Cài Đặt</string>
+</resources>

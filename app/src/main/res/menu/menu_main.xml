@@ -1,0 +1,44 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="com.fishing.namtran.fishingmanagerservice.ManagerCustomerActivity">
+
+    <item
+        android:id="@+id/add_customer"
+        android:orderInCategory="1"
+        app:showAsAction="ifRoom|withText"
+        android:icon="@android:drawable/ic_menu_add"
+        android:title="@string/add_customer"/>
+
+    <item
+        android:id="@+id/settings"
+        android:orderInCategory="4"
+        app:showAsAction="never"
+        android:icon="@android:drawable/ic_menu_manage"
+        android:title="@string/settings"/>
+
+    <item
+        android:id="@+id/logout"
+        android:orderInCategory="5"
+        app:showAsAction="never"
+        android:icon="@android:drawable/ic_notification_clear_all"
+        android:title="@string/logout"/>
+
+    <!--
+    <item
+        android:id="@+id/table_basic"
+        android:orderInCategory="100"
+        android:title="@string/table_basic"
+        app:showAsAction="never" />
+   <item
+        android:id="@+id/table_original"
+        android:orderInCategory="101"
+        android:title="@string/table_original"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/table_original_sortable"
+        android:orderInCategory="102"
+        android:title="@string/table_original_sortable"
+        app:showAsAction="never" />
+    -->
+</menu>
