@@ -15,7 +15,6 @@ public class InitializeDatabase extends SQLiteOpenHelper {
                     Settings.Properties._ID + " INTEGER PRIMARY KEY," +
                     Settings.Properties.PACKAGE_FISHING + " INTEGER," +
                     Settings.Properties.PRICE_FISHING + " INTEGER," +
-                    Settings.Properties.PRICE_FEED_TYPE + " INTEGER," +
                     Settings.Properties.PRICE_BUY_FISH + " INTEGER); ";
 
     private static final String SQL_CREATE_USERS_TABLE =
@@ -57,8 +56,7 @@ public class InitializeDatabase extends SQLiteOpenHelper {
                     Settings.Properties._ID + "," +
                     Settings.Properties.PACKAGE_FISHING + "," +
                     Settings.Properties.PRICE_FISHING + "," +
-                    Settings.Properties.PRICE_FEED_TYPE + "," +
-                    Settings.Properties.PRICE_BUY_FISH + ") VALUES ( 1, 3, 120000, 0, 12000 ); ";
+                    Settings.Properties.PRICE_BUY_FISH + ") VALUES ( 1, 3, 120000, 12000 ); ";
 
     private static final String SQL_CREATE_CUSTOMERS_RECORDS =
             "INSERT INTO " + Customers.Properties.TABLE_NAME + " (" +

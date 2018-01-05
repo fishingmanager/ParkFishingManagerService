@@ -287,14 +287,7 @@ public class AddNewCustomerActivity extends AppCompatActivity {
 
                 long custId = customer.createCustomer(mFullName, mMobile);
                 long fishingId = fishing.createFishingEntry(custId, fullDateIn, mNote);
-
-                if(fishingId == -1)
-                {
-                    Utils.Alert(AddNewCustomerActivity.this, getString(R.string.fishing_status));
-                }
-                else {
-                    finish();
-                }
+                finish();
             } else {
                 Utils.Alert(AddNewCustomerActivity.this, getString(R.string.action_error));
             }

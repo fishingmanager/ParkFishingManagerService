@@ -31,16 +31,14 @@ public class FishingManager {
         String datetime = mDateIn.split(" ")[0];
         long fishingId = -1;
 
-        if(!checkFishingEntryExisted(mCustomerId, datetime)) {
-            // Create a new map of values, where column names are the keys
-            ContentValues values = new ContentValues();
-            values.put(Fishings.Properties.CUSTOMER_ID, mCustomerId);
-            values.put(Fishings.Properties.DATE_IN, mDateIn);
-            values.put(Fishings.Properties.NOTE, mNote);
+        // Create a new map of values, where column names are the keys
+        ContentValues values = new ContentValues();
+        values.put(Fishings.Properties.CUSTOMER_ID, mCustomerId);
+        values.put(Fishings.Properties.DATE_IN, mDateIn);
+        values.put(Fishings.Properties.NOTE, mNote);
 
-            // Insert the new row, returning the primary key value of the new row
-            fishingId = db.insert(Fishings.Properties.TABLE_NAME, null, values);
-        }
+        // Insert the new row, returning the primary key value of the new row
+        fishingId = db.insert(Fishings.Properties.TABLE_NAME, null, values);
 
         //close connection
         db.close();

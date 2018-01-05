@@ -55,7 +55,6 @@ public class SettingsManager {
         String[] projection = {
                 Settings.Properties.PACKAGE_FISHING,
                 Settings.Properties.PRICE_FISHING,
-                Settings.Properties.PRICE_FEED_TYPE,
                 Settings.Properties.PRICE_BUY_FISH
         };
 

@@ -87,6 +87,7 @@
                     android:layout_height="wrap_content"
                     android:hint="@string/date_out"
                     android:maxLines="1"
+                    android:enabled="false"
                     android:singleLine="true" />
 
             </android.support.design.widget.TextInputLayout>
@@ -112,45 +113,13 @@
                 android:layout_height="wrap_content">
 
                 <EditText
-                    android:id="@+id/keep_fish"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="@string/keep_fish"
-                    android:maxLines="1"
-                    android:inputType="numberDecimal"
-                    android:imeOptions="actionDone"
-                    android:singleLine="true" />
-
-            </android.support.design.widget.TextInputLayout>
-
-            <android.support.design.widget.TextInputLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <EditText
-                    android:id="@+id/take_fish"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="@string/take_fish"
-                    android:maxLines="1"
-                    android:inputType="numberDecimal"
-                    android:imeOptions="actionDone"
-                    android:singleLine="true" />
-
-            </android.support.design.widget.TextInputLayout>
-
-            <android.support.design.widget.TextInputLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <EditText
                     android:id="@+id/total_fish"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="@string/total_fish"
                     android:maxLines="1"
                     android:inputType="number"
-                    android:enabled="false"
+                    android:maxLength="4"
                     android:singleLine="true" />
 
             </android.support.design.widget.TextInputLayout>
@@ -160,12 +129,13 @@
                 android:layout_height="wrap_content">
 
                 <EditText
-                    android:id="@+id/fee_do_fish"
+                    android:id="@+id/buy_fish"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="@string/fee_do_fish"
+                    android:hint="@string/buy_fish"
                     android:maxLines="1"
-                    android:inputType="number"
+                    android:inputType="numberDecimal"
+                    android:imeOptions="actionDone"
                     android:singleLine="true" />
 
             </android.support.design.widget.TextInputLayout>
@@ -206,7 +176,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
-                android:text="@string/update_status"
+                android:text="@string/end_fishing"
                 android:textStyle="bold" />
 
         </LinearLayout>

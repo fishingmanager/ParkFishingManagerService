@@ -64,8 +64,7 @@ public class UpdateCustomerActivity extends AppCompatActivity {
     private String mDateIn;
     private double mBuyFish;
     private long mFeePackage;
-    private long mFeeFeedType;
-    private int mPriceFeedType;
+    private int mPriceBuyFish;
     private int mPriceFishing;
     private double mTotalFish;
 
@@ -89,7 +88,6 @@ public class UpdateCustomerActivity extends AppCompatActivity {
         mSubmitFormView = findViewById(R.id.update_customer_form);
         mProgressView = findViewById(R.id.update_customer_progress);
 
-        int feedTypeStatus = 0;
         int packagePrice = 0;
 
         Cursor fishings = (new FishingManager(getApplicationContext())).getFishingEntriesById(mFishingId);
@@ -98,7 +96,7 @@ public class UpdateCustomerActivity extends AppCompatActivity {
         if (settings.moveToNext()) {
             mPriceFishing = settings.getInt(settings.getColumnIndexOrThrow(Settings.Properties.PRICE_FISHING));
             packagePrice = settings.getInt(settings.getColumnIndexOrThrow(Settings.Properties.PACKAGE_FISHING));
-            mPriceFeedType = settings.getInt(settings.getColumnIndexOrThrow(Settings.Properties.PRICE_FEED_TYPE));
+            mPriceBuyFish = settings.getInt(settings.getColumnIndexOrThrow(Settings.Properties.PRICE_BUY_FISH));
         }
         settings.close();
 
@@ -119,13 +117,9 @@ public class UpdateCustomerActivity extends AppCompatActivity {
 
             mDatInView.setText(String.format("%02d:%02d", cal.get(Calendar.HOUR_OF_DAY), cal.get(Calendar.MINUTE)));
             mBuyFish = fishings.getDouble(fishings.getColumnIndexOrThrow(Fishings.Properties.BUY_FISH));
-            mTotalFish = fishings.getDouble(fishings.getColumnIndexOrThrow(Fishings.Properties.TOTAL_FISH));
             mNoteView.setText(fishings.getString(fishings.getColumnIndexOrThrow(Fishings.Properties.NOTE)));
         }
         fishings.close();
-
-        mTotalFishView.setText(mTotalFish + "");
-        mTotalMoneyView.setText((mBuyFish + mFeePackage) + "");
 
         //Events action
         Button mUpdateCustomerButton = (Button) findViewById(R.id.update_customer_button);
@@ -136,18 +130,9 @@ public class UpdateCustomerActivity extends AppCompatActivity {
             }
         });
 
-        mDateOutView.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                if(MotionEvent.ACTION_UP == event.getAction())
-                {
-                    GetTimeDateOutAndCalculateFeeFishing();
-                }
-                return false;
-            }
-        });
+        GetTimeDateOutAndCalculateFeeFishing();
 
-        mBuyFishView.addTextChangedListener(new TextWatcher() {
+        mTotalFishView.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
@@ -160,104 +145,70 @@ public class UpdateCustomerActivity extends AppCompatActivity {
 
             @Override
             public void afterTextChanged(Editable s) {
-                String feeDoFishText = mBuyFishView.getText().toString();
-                int feeDoFish = 0;
+                String totalFishText = mTotalFishView.getText().toString();
+                int totalFish = 0;
 
-                if(!feeDoFishText.equals(""))
+                if(!totalFishText.equals(""))
                 {
-                    feeDoFish = Integer.parseInt(mBuyFishView.getText().toString());
+                    totalFish = Integer.parseInt(mTotalFishView.getText().toString());
                 }
-                mTotalMoneyView.setText((mBuyFish + mFeePackage) + "");
+                mBuyFishView.setText(mPriceBuyFish*totalFish + "");
+                mTotalMoneyView.setText((mFeePackage - mPriceBuyFish*totalFish) + "");
             }
         });
     }
 
     public void GetTimeDateOutAndCalculateFeeFishing()
     {
-        // Get Current Time
-        final Calendar c = Calendar.getInstance();
-        int mHour = c.get(Calendar.HOUR_OF_DAY);
-        int mMinute = c.get(Calendar.MINUTE);
+        EditText totalHours = (EditText) mTotalHoursView;
+        EditText dateOut = (EditText) mDateOutView;
 
-        // Launch Time Picker Dialog
-        TimePickerDialog timePickerDialog = new TimePickerDialog(this,
-                new TimePickerDialog.OnTimeSetListener() {
+        DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+        Date currentDate = new Date();
+        dateOut.setText(String.format("%02d:%02d", currentDate.getHours(), currentDate.getMinutes()));
+        String fullDateOut = dateFormat.format(currentDate);
 
-                    @Override
-                    public void onTimeSet(TimePicker view, int hourOfDay,
-                                          int minute) {
-                        EditText totalHours = (EditText) mTotalHoursView;
-                        EditText dateOut = (EditText) mDateOutView;
-                        dateOut.setText(String.format("%02d:%02d", hourOfDay, minute));
+        try {
+            if(dateOut != null) {
+                long diff = (dateFormat.parse(fullDateOut).getTime() - dateFormat.parse(mDateIn).getTime());
+                long diffSeconds = diff / 1000 % 60;
+                long diffMinutes = diff / (60 * 1000) % 60;
+                long diffHours = diff / (60 * 60 * 1000);
 
-                        DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
-                        DateFormat sqlDateFormat = new SimpleDateFormat("yyyy/MM/dd");
-                        Date currentDate = new Date();
-                        String dateFishing = sqlDateFormat.format(currentDate);
+                if(diffHours < 0 || diffMinutes < 0) {
+                    dateOut.setText("");
+                    Utils.Alert(UpdateCustomerActivity.this, "ERROR !");
+                }
+                else {
+                    long totalFee = 0;
+                    long point3Hours = mPriceFishing;
+                    long extra30Mins = 20000;
 
-                        String fullDateOut = dateFishing + " " + String.format("%02d:%02d", hourOfDay, minute) + ":00";
+                    totalHours.setText(String.format("%02d:%02d", diffHours, diffMinutes));
 
-                        try {
-                            if(dateOut != null) {
-                                long diff = (dateFormat.parse(fullDateOut).getTime() - dateFormat.parse(mDateIn).getTime());
-                                long diffSeconds = diff / 1000 % 60;
-                                long diffMinutes = diff / (60 * 1000) % 60;
-                                long diffHours = diff / (60 * 60 * 1000);
+                    if(diffHours > 3)
+                    {
+                        long extraHours = diffHours - 3;
+                        totalFee = point3Hours + (extraHours * 2) * extra30Mins; //30 mins are 20k
 
-                                if(diffHours < 0 || diffMinutes < 0) {
-                                    dateOut.setText("");
-                                    Utils.Alert(UpdateCustomerActivity.this, "ERROR !");
-                                }
-                                else {
-                                    long totalFee = 0;
-                                    long point2Hours = 120000;
-                                    long point3Hours = 170000;
-                                    long point4Hours = mPriceFishing;
-                                    long extra30Mins = 20000;
-
-                                    totalHours.setText(String.format("%02d:%02d", diffHours, diffMinutes));
-
-                                    if (diffHours < 3) {
-                                        if (diffHours < 2) {
-                                            totalFee = point2Hours;
-                                        } else if (diffHours == 2) {
-                                            totalFee = point2Hours;
-                                            if (diffMinutes >= 15) {
-                                                totalFee = point3Hours;
-                                            }
-                                        }
-                                    } else if (diffHours >= 3 && diffHours < 4) // >3h
-                                    {
-                                        if (diffMinutes >= 15) {
-                                            totalFee = point4Hours;
-                                        } else {
-                                            totalFee = point3Hours;
-                                        }
-                                    } else // >4h
-                                    {
-                                        long extraHours = diffHours - 4;
-                                        totalFee = point4Hours + (extraHours * 2) * extra30Mins; //30 mins are 20k
-                                        if (diffMinutes >= 10) // > 10mins
-                                        {
-                                            if (diffMinutes <= 30) {
-                                                totalFee += extra30Mins;
-                                            } else {
-                                                totalFee += 2 * extra30Mins;
-                                            }
-                                        }
-                                    }
-                                    mFeePackage = totalFee;
-                                    mTotalMoneyView.setText(mFeePackage + mBuyFish + "");
-                                }
+                        if (diffMinutes >= 10) // > 10mins
+                        {
+                            if (diffMinutes <= 30) {
+                                totalFee += extra30Mins;
+                            } else {
+                                totalFee += 2 * extra30Mins;
                             }
-
-                        } catch (ParseException e) {
-                            e.printStackTrace();
                         }
-
                     }
-                }, mHour, mMinute, true);
-        timePickerDialog.show();
+
+                    mFeePackage = totalFee;
+                    mTotalMoneyView.setText(mFeePackage + "");
+                }
+            }
+
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
     }
 
     /**

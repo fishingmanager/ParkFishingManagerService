@@ -52,7 +52,7 @@ public class OriginalTableFixHeader {
         return adapter;
     }
 
-    private  void onLoad(final OriginalTableFixHeaderAdapter adapter)
+    private void onLoad(final OriginalTableFixHeaderAdapter adapter)
     {
         Nexus ne = adapter.getBody().get(1);
         //Utils.Alert(context, ne.data[1]);
@@ -64,6 +64,7 @@ public class OriginalTableFixHeader {
             public void onLoad(Nexus item, OriginalCellViewGroup viewGroup)
             {
                 //viewGroup.textView.setTextColor(ContextCompat.getColor(context, R.color.colorBlue));
+                Utils.Alert(context, item.data[1]);
             }
         };
     }
@@ -211,7 +212,7 @@ public class OriginalTableFixHeader {
                     fishings.getString(fishings.getColumnIndexOrThrow(Fishings.Properties.TOTAL_MONEY)),
                     fishings.getString(fishings.getColumnIndexOrThrow(Fishings.Properties.NOTE))));
         }
-        items.add(new Nexus(context.getString(R.string.total_all) + ": " + onlineCount + "/" + totalFisher, "", "", "", "", "", "", totalFish + "", totalMoney + "", ""));
+        items.add(new Nexus(context.getString(R.string.total_all) + ": " + onlineCount + "/" + totalFisher, "", "", "", "", "", "", "", totalMoney + "", ""));
         totalItems = items.size() - 1;
         fishings.close();
         return items;

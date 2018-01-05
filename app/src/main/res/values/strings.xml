@@ -29,12 +29,13 @@
     <string name="total_money">Tổng Tiền</string>
     <string name="note">Ghi Chú</string>
     <string name="package_fishing">Suất (Giờ)</string>
-    <string name="price">Giá Cá</string>
+    <string name="price">Giá 1 Suất Cá</string>
     <string name="action_submit_short">Đồng Ý</string>
     <string name="error_invalid_mobile">Điện Thoại Quá Ngắn. Nhập Ít Nhất Là 4 Số</string>
     <string name="yes">Có</string>
     <string name="no">Không</string>
     <string name="update_status">Cập Nhật Khách Hàng</string>
+    <string name="end_fishing">Kết Thúc Câu</string>
     <string name="fee_do_fish">Phí Làm Cá</string>
     <string name="total_all">Tổng</string>
     <string name="log">Lich Sử</string>

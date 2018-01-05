@@ -44,6 +44,7 @@
                     android:imeOptions="actionUnspecified"
                     android:inputType="number"
                     android:maxLines="1"
+                    android:enabled="false"
                     android:singleLine="true" />
 
             </android.support.design.widget.TextInputLayout>
