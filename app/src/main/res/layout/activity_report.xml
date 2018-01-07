@@ -8,11 +8,11 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="com.fishing.namtran.fishingmanagerservice.AddNewCustomerActivity">
+    tools:context="com.fishing.namtran.fishingmanagerservice.ReportActivity">
 
     <!-- Login progress -->
     <ProgressBar
-        android:id="@+id/add_new_customer_progress"
+        android:id="@+id/report_progress"
         style="?android:attr/progressBarStyleLarge"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -20,7 +20,7 @@
         android:visibility="gone" />
 
     <ScrollView
-        android:id="@+id/add_new_customer_form"
+        android:id="@+id/report_form"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
@@ -34,40 +34,27 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
-                <AutoCompleteTextView
-                    android:id="@+id/fullname"
+                <EditText
+                    android:id="@+id/date_report"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="@string/fullname"
-                    android:inputType="textEmailAddress"
+                    android:hint="@string/date"
+                    android:imeActionId="@+id/login"
+                    android:imeActionLabel="@string/action_submit_short"
+                    android:imeOptions="actionUnspecified"
                     android:maxLines="1"
+                    android:inputType="date"
                     android:singleLine="true" />
 
             </android.support.design.widget.TextInputLayout>
 
-            <android.support.design.widget.TextInputLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <EditText
-                    android:id="@+id/note"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="@string/note"
-                    android:imeActionId="@+id/login"
-                    android:imeActionLabel="@string/action_submit_short"
-                    android:imeOptions="actionUnspecified"
-                    android:maxLines="5" />
-
-            </android.support.design.widget.TextInputLayout>
-
             <Button
-                android:id="@+id/add_new_customer_button"
+                android:id="@+id/report_button"
                 style="?android:textAppearanceSmall"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
-                android:text="@string/title_activity_add_new_customer"
+                android:text="@string/action_submit_short"
                 android:textStyle="bold" />
 
         </LinearLayout>

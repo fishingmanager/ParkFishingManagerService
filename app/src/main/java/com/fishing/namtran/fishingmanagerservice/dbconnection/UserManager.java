@@ -126,6 +126,47 @@ public class UserManager {
         cursor.close();
         return false;
     }
+
+    public boolean UserLoginbyRole(String email, String password, String role)
+    {
+        InitializeDatabase mDbHelper = new InitializeDatabase(context);
+        db = mDbHelper.getReadableDatabase();
+
+        // Define a projection that specifies which columns from the database
+        // you will actually use after this query.
+        String[] projection = {
+                User.Properties._ID,
+                User.Properties.EMAIL,
+                User.Properties.PASSWORD,
+                User.Properties.ROLE
+        };
+
+        String selection = User.Properties.EMAIL + " = ? AND " + User.Properties.PASSWORD + " = ?" + " AND " + User.Properties.ROLE + " = ?";
+        String[] selectionArgs = { email, password, role };
+
+        Cursor cursor = db.query(
+                User.Properties.TABLE_NAME,              // The table to query
+                projection,                               // The columns to return
+                selection,                                // The columns for the WHERE clause
+                selectionArgs,                            // The values for the WHERE clause
+                null,                                     // don't group the rows
+                null,                                     // don't filter by row groups
+                null                                 // The sort order
+        );
+
+        while(cursor.moveToNext()) {
+            if(email.equals(cursor.getString(cursor.getColumnIndexOrThrow(User.Properties.EMAIL)))
+                    && password.equals(cursor.getString(cursor.getColumnIndexOrThrow(User.Properties.PASSWORD)))
+                    && role.equals(cursor.getString(cursor.getColumnIndexOrThrow(User.Properties.ROLE)))) {
+                cursor.close();
+                mDbHelper.close();
+                return true;
+            }
+        }
+        cursor.close();
+        mDbHelper.close();
+        return false;
+    }
 }
 //https://stackoverflow.com/questions/19194576/how-do-i-view-the-sqlite-database-on-an-android-device
 //https://www.androidhive.info/2012/08/android-session-management-using-shared-preferences/

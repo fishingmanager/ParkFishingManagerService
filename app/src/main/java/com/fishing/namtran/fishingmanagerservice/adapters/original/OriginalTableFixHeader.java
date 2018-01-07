@@ -1,18 +1,20 @@
 package com.fishing.namtran.fishingmanagerservice.adapters.original;
 
+import android.app.Dialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.database.Cursor;
 import android.support.design.widget.Snackbar;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AlertDialog;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
 
+import com.fishing.namtran.fishingmanagerservice.ChangeFishingActivity;
 import com.fishing.namtran.fishingmanagerservice.R;
 import com.fishing.namtran.fishingmanagerservice.UpdateCustomerActivity;
 import com.fishing.namtran.fishingmanagerservice.Utils;
-import com.fishing.namtran.fishingmanagerservice.dbconnection.Customers;
 import com.fishing.namtran.fishingmanagerservice.dbconnection.FishingManager;
 import com.fishing.namtran.fishingmanagerservice.dbconnection.Fishings;
+import com.fishing.namtran.fishingmanagerservice.dbconnection.UserManager;
 import com.inqbarna.tablefixheaders.adapters.BaseTableAdapter;
 import com.fishing.namtran.fishingmanagerservice.adapters.TableFixHeaderAdapter;
 
@@ -41,7 +43,7 @@ public class OriginalTableFixHeader {
         OriginalTableFixHeaderAdapter adapter = new OriginalTableFixHeaderAdapter(context);
         List<Nexus> body = getBody();
 
-        adapter.setFirstHeader(context.getString(R.string.number_fishing));
+        adapter.setFirstHeader(context.getString(R.string.order));
         adapter.setHeader(getHeader());
         adapter.setFirstBody(body);
         adapter.setBody(body);
@@ -84,19 +86,13 @@ public class OriginalTableFixHeader {
                 //viewGroup.vg_root.setBackgroundColor(ContextCompat.getColor(context, R.color.colorYellow));
 
                 if(totalItems != row) {
-                    final String fishingId = item.data[0];
-                    final FishingManager fishings = new FishingManager(context);
-                    Cursor cursors = fishings.getFishingEntryByFishingId(fishingId);
-
-                    String dateOut = null;
-                    final int status;
-                    if (cursors.moveToNext()) {
-                        dateOut = cursors.getString(cursors.getColumnIndexOrThrow(Fishings.Properties.DATE_OUT));
+                    if(item.data[4] == "")
+                    {
+                        Utils.Redirect(context, UpdateCustomerActivity.class, "fishingId", item.data[1]);
                     }
-
-                    if (dateOut == null) {
-                        //adapter.setBody(getBody());
-                        Utils.Redirect(context, UpdateCustomerActivity.class, "fishingId", item.data[0]);
+                    else
+                    {
+                        callLoginDialog(ChangeFishingActivity.class, item.data[1]);
                     }
                 }
             }
@@ -123,10 +119,37 @@ public class OriginalTableFixHeader {
         //adapter.setLongClickListenerBody(longClickListenerBody);
     }
 
+    private void callLoginDialog(final Class<?> _class, final String fishingId)
+    {
+        final Dialog myDialog = new Dialog(context);
+        myDialog.setContentView(R.layout.activity_login);
+        myDialog.setCancelable(true);
+        Button login = (Button) myDialog.findViewById(R.id.email_sign_in_button);
+
+        final EditText emailaddr = (EditText) myDialog.findViewById(R.id.email);
+        final EditText password = (EditText) myDialog.findViewById(R.id.password);
+        myDialog.show();
+
+        login.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                UserManager user = new UserManager(context);
+                if(user.UserLoginbyRole(emailaddr.getText().toString(), password.getText().toString(), "1"))
+                {
+                    myDialog.dismiss();
+                    Utils.Redirect(context, _class, "fishingId", fishingId);
+                }
+                myDialog.setTitle("ERROR 123");
+            }
+        });
+    }
+
     private List<String> getHeader() {
         final String headers[] = {
+                context.getString(R.string.number_fishing),
                 context.getString(R.string.fullname),
-                context.getString(R.string.mobile),
                 context.getString(R.string.date_in),
                 context.getString(R.string.date_out),
                 context.getString(R.string.total_hours),
@@ -141,12 +164,8 @@ public class OriginalTableFixHeader {
 
     private List<Nexus> getBody() {
         List<Nexus> items = new ArrayList<>();
-        //String priceFishing = null;
-        //String packagePrice = null;
-        //int priceFeedType = 0;
         int onlineCount = 0;
         int totalMoney = 0;
-        int totalFish = 0;
 
         DateFormat currentDateFormat = new SimpleDateFormat("dd/MM/yyyy");
         DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
@@ -157,18 +176,9 @@ public class OriginalTableFixHeader {
         items.add(new Nexus(dateFishing));
 
         Cursor fishings = (new FishingManager(context)).getFishingEntries(sqlDateFormat.format(currentDate));
-        //Cursor settings = (new SettingsManager(context)).getSettingEntry("1");
         int totalFisher = fishings.getCount();
 
-        /*
-        while (settings.moveToNext()) {
-            priceFishing = settings.getString(settings.getColumnIndexOrThrow(Settings.Properties.PRICE_FISHING));
-            packagePrice = settings.getString(settings.getColumnIndexOrThrow(Settings.Properties.PACKAGE_FISHING));
-            priceFeedType = settings.getInt(settings.getColumnIndexOrThrow(Settings.Properties.PRICE_FEED_TYPE));
-        }
-        settings.close();
-        */
-
+        int order = 1;
         while (fishings.moveToNext()) {
             String dateIn = fishings.getString(fishings.getColumnIndexOrThrow(Fishings.Properties.DATE_IN));
             String dateOut = fishings.getString(fishings.getColumnIndexOrThrow(Fishings.Properties.DATE_OUT));
@@ -186,7 +196,6 @@ public class OriginalTableFixHeader {
                     dateOutView = String.format("%02d:%02d", cal.get(Calendar.HOUR_OF_DAY), cal.get(Calendar.MINUTE));
 
                     long diff = (dateFormat.parse(dateOut).getTime() - dateFormat.parse(dateIn).getTime());
-                    //long diffSeconds = diff / 1000 % 60;
                     long diffMinutes = diff / (60 * 1000) % 60;
                     long diffHours = diff / (60 * 60 * 1000);
                     totalHoursView = String.format("%02d:%02d", diffHours, diffMinutes);
@@ -197,13 +206,12 @@ public class OriginalTableFixHeader {
                 e.printStackTrace();
             }
 
-            totalFish += fishings.getInt(fishings.getColumnIndexOrThrow(Fishings.Properties.TOTAL_FISH));
             totalMoney += fishings.getInt(fishings.getColumnIndexOrThrow(Fishings.Properties.TOTAL_MONEY));
 
             items.add(new Nexus(
+                    order + "",
                     fishings.getString(fishings.getColumnIndexOrThrow(Fishings.Properties._ID)),
-                    fishings.getString(fishings.getColumnIndexOrThrow(Customers.Properties.FULLNAME)),
-                    fishings.getString(fishings.getColumnIndexOrThrow(Customers.Properties.MOBILE)),
+                    fishings.getString(fishings.getColumnIndexOrThrow(Fishings.Properties.FULLNAME)),
                     dateInView,
                     dateOutView,
                     totalHoursView,
@@ -211,6 +219,7 @@ public class OriginalTableFixHeader {
                     fishings.getString(fishings.getColumnIndexOrThrow(Fishings.Properties.BUY_FISH)),
                     fishings.getString(fishings.getColumnIndexOrThrow(Fishings.Properties.TOTAL_MONEY)),
                     fishings.getString(fishings.getColumnIndexOrThrow(Fishings.Properties.NOTE))));
+            order++;
         }
         items.add(new Nexus(context.getString(R.string.total_all) + ": " + onlineCount + "/" + totalFisher, "", "", "", "", "", "", "", totalMoney + "", ""));
         totalItems = items.size() - 1;

@@ -12,7 +12,7 @@ public final class Fishings {
     /* Inner class that defines the table contents */
     public static class Properties implements BaseColumns {
         public static final String TABLE_NAME = "fishings";
-        public static final String CUSTOMER_ID = "customerId";
+        public static final String FULLNAME = "fullname";
         public static final String DATE_IN = "dateIn";
         public static final String DATE_OUT = "dateOut";
         public static final String TOTAL_FISH = "total_fish";

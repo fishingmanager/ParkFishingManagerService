@@ -28,7 +28,7 @@ public class InitializeDatabase extends SQLiteOpenHelper {
             "CREATE TABLE IF NOT EXISTS " + Fishings.Properties.TABLE_NAME + " (" +
                     Fishings.Properties._ID + " INTEGER PRIMARY KEY," +
                     Fishings.Properties.USER_ID + " INTEGER DEFAULT 1," +
-                    Fishings.Properties.CUSTOMER_ID + " INTEGER," +
+                    Fishings.Properties.FULLNAME + " TEXT," +
                     Fishings.Properties.DATE_IN + " DATETIME," +
                     Fishings.Properties.DATE_OUT + " DATETIME," +
                     Fishings.Properties.BUY_FISH + " REAL DEFAULT 0," +
@@ -36,20 +36,21 @@ public class InitializeDatabase extends SQLiteOpenHelper {
                     Fishings.Properties.TOTAL_MONEY + " REAL DEFAULT 0.0," +
                     Fishings.Properties.NOTE + " TEXT); ";
 
-    private static final String SQL_CREATE_CUSTOMERS_TABLE =
-            "CREATE TABLE IF NOT EXISTS " + Customers.Properties.TABLE_NAME + " (" +
-                    Customers.Properties._ID + " INTEGER PRIMARY KEY," +
-                    Customers.Properties.FULLNAME + " TEXT," +
-                    Customers.Properties.MOBILE + " TEXT); ";
-
     /*---------------- Insert sample records -----------------------*/
 
-    private static final String SQL_CREATE_USERS_RECORDS =
+    private static final String SQL_CREATE_USERS_RECORDS_1 =
             "INSERT INTO " + User.Properties.TABLE_NAME + " (" +
                     User.Properties._ID + "," +
                     User.Properties.ROLE + "," +
                     User.Properties.EMAIL + "," +
                     User.Properties.PASSWORD + ") VALUES ( 1, 0, 'nam@gmail.com', '12341234'); ";
+
+    private static final String SQL_CREATE_USERS_RECORDS_2 =
+                    "INSERT INTO " + User.Properties.TABLE_NAME + " (" +
+                    User.Properties._ID + "," +
+                    User.Properties.ROLE + "," +
+                    User.Properties.EMAIL + "," +
+                    User.Properties.PASSWORD + ") VALUES ( 2, 1, 'can@gmail.com', '12341234'); ";
 
     private static final String SQL_CREATE_SETTINGS_RECORDS =
             "INSERT INTO " + Settings.Properties.TABLE_NAME + " (" +
@@ -58,23 +59,17 @@ public class InitializeDatabase extends SQLiteOpenHelper {
                     Settings.Properties.PRICE_FISHING + "," +
                     Settings.Properties.PRICE_BUY_FISH + ") VALUES ( 1, 3, 120000, 12000 ); ";
 
-    private static final String SQL_CREATE_CUSTOMERS_RECORDS =
-            "INSERT INTO " + Customers.Properties.TABLE_NAME + " (" +
-                    Customers.Properties._ID + "," +
-                    Customers.Properties.FULLNAME + "," +
-                    Customers.Properties.MOBILE + ") VALUES ( 1, 'Anh Nam', '0909686767' ); ";
-
     private static final String SQL_CREATE_FISHINGS_RECORDS =
             "INSERT INTO " + Fishings.Properties.TABLE_NAME + " (" +
                     Fishings.Properties._ID + "," +
                     Fishings.Properties.USER_ID + "," +
-                    Fishings.Properties.CUSTOMER_ID + "," +
+                    Fishings.Properties.FULLNAME + "," +
                     Fishings.Properties.DATE_IN + "," +
                     Fishings.Properties.DATE_OUT + "," +
                     Fishings.Properties.BUY_FISH + "," +
                     Fishings.Properties.TOTAL_FISH + "," +
                     Fishings.Properties.TOTAL_MONEY + "," +
-                    Fishings.Properties.NOTE + ") VALUES ( 1, 1, 1, '2017/11/06 08:00:59', '2017/11/06 10:00:59', 15000, 0.0, 120000, 'Khong co' ); ";
+                    Fishings.Properties.NOTE + ") VALUES ( 1, 1, 'Anh Nam', '2017/11/06 08:00:59', '2017/11/06 10:00:59', 15000, 0.0, 120000, 'Khong co' ); ";
 
     /*---------------- Insert sample records -----------------------*/
 
@@ -87,9 +82,6 @@ public class InitializeDatabase extends SQLiteOpenHelper {
     private static final String SQL_DELETE_FISHINGS_TABLE =
             "DROP TABLE IF EXISTS " + Fishings.Properties.TABLE_NAME;
 
-    private static final String SQL_DELETE_CUSTOMERS_TABLE =
-            "DROP TABLE IF EXISTS " + Customers.Properties.TABLE_NAME;
-
     public InitializeDatabase(Context context) {
         super(context, DbConfig.DATABASE_NAME, null, DbConfig.DATABASE_VERSION);
     }
@@ -97,11 +89,10 @@ public class InitializeDatabase extends SQLiteOpenHelper {
         db.execSQL(SQL_CREATE_SETTINGS_TABLE);
         db.execSQL(SQL_CREATE_USERS_TABLE);
         db.execSQL(SQL_CREATE_FISHINGS_TABLE);
-        db.execSQL(SQL_CREATE_CUSTOMERS_TABLE);
 
-        db.execSQL(SQL_CREATE_USERS_RECORDS);
+        db.execSQL(SQL_CREATE_USERS_RECORDS_1);
+        db.execSQL(SQL_CREATE_USERS_RECORDS_2);
         db.execSQL(SQL_CREATE_SETTINGS_RECORDS);
-        db.execSQL(SQL_CREATE_CUSTOMERS_RECORDS);
         db.execSQL(SQL_CREATE_FISHINGS_RECORDS);
     }
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
@@ -110,7 +101,6 @@ public class InitializeDatabase extends SQLiteOpenHelper {
         db.execSQL(SQL_DELETE_USERS_TABLE);
         db.execSQL(SQL_DELETE_SETTINGS_TABLE);
         db.execSQL(SQL_DELETE_FISHINGS_TABLE);
-        db.execSQL(SQL_DELETE_CUSTOMERS_TABLE);
         onCreate(db);
     }
     public void onDowngrade(SQLiteDatabase db, int oldVersion, int newVersion) {

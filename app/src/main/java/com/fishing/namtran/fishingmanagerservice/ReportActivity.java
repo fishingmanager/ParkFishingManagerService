@@ -3,16 +3,20 @@ package com.fishing.namtran.fishingmanagerservice;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
-import android.support.v7.app.AppCompatActivity;
+import android.app.DatePickerDialog;
+import android.content.Context;
+import android.database.Cursor;
 import android.os.AsyncTask;
-
 import android.os.Build;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.EditText;
 
 import com.fishing.namtran.fishingmanagerservice.dbconnection.FishingManager;
@@ -20,12 +24,11 @@ import com.fishing.namtran.fishingmanagerservice.dbconnection.FishingManager;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Date;
 
 /**
  * A login screen that offers login via email/password.
  */
-public class AddNewCustomerActivity extends AppCompatActivity {
+public class ReportActivity extends AppCompatActivity {
 
     /**
      * Keep track of the login task to ensure we can cancel it if requested.
@@ -33,30 +36,68 @@ public class AddNewCustomerActivity extends AppCompatActivity {
     private CustomerActionTask mCustomerTask = null;
 
     // UI references.
-    private AutoCompleteTextView mFullNameView;
-    private EditText mNoteView;
+    private EditText mDatePickerView;
     private View mProgressView;
     private View mSubmitFormView;
-    //private Cursor SearchCustomers;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_add_new_customer);
+        setContentView(R.layout.activity_report);
 
         // Set up the login form.
-        mFullNameView = (AutoCompleteTextView) findViewById(R.id.fullname);
-        mNoteView = (EditText) findViewById(R.id.note);
-        mSubmitFormView = findViewById(R.id.add_new_customer_form);
-        mProgressView = findViewById(R.id.add_new_customer_progress);
+        mDatePickerView = (EditText) findViewById(R.id.date_report);
+        mSubmitFormView = findViewById(R.id.report_form);
+        mProgressView = findViewById(R.id.report_progress);
 
-        Button mAddNewCustomerButton = (Button) findViewById(R.id.add_new_customer_button);
-        mAddNewCustomerButton.setOnClickListener(new OnClickListener() {
+        Button mReportButton = (Button) findViewById(R.id.report_button);
+        mReportButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
                 attemptSubmit();
             }
         });
+
+        /*mDatePickerView.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View view, boolean hasFocus) {
+                if(hasFocus) {
+                    EditText editText = (EditText) mDatePickerView;
+                    GetDatePicker(editText);
+                }
+            }
+        });*/
+
+
+        mDatePickerView.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v) {
+                EditText editText = (EditText) mDatePickerView;
+                GetDatePicker(editText);
+            }
+        });
+    }
+
+    public void GetDatePicker(final Object objText)
+    {
+        // Get Current Date
+        Calendar c = Calendar.getInstance();
+        int mYear = c.get(Calendar.YEAR);
+        int mMonth = c.get(Calendar.MONTH);
+        int mDay = c.get(Calendar.DAY_OF_MONTH);
+
+        // Launch Date Picker Dialog
+        DatePickerDialog datePickerDialog = new DatePickerDialog(this,
+                new DatePickerDialog.OnDateSetListener() {
+                    @Override
+                    public void onDateSet(DatePicker view, int year,
+                                          int monthOfYear, int dayOfMonth) {
+                        EditText editText = (EditText) objText;
+                        editText.setText(String.format("%02d/%02d/%02d", year, monthOfYear + 1, dayOfMonth));
+                    }
+                }, mYear, mMonth, mDay);
+        datePickerDialog.show();
     }
 
     @Override
@@ -76,18 +117,17 @@ public class AddNewCustomerActivity extends AppCompatActivity {
         }
 
         // Reset errors.
-        mFullNameView.setError(null);
+        mDatePickerView.setError(null);
 
         // Store values at the time of the login attempt.
-        String fullname = mFullNameView.getText().toString();
-        String note = mNoteView.getText().toString();
+        String datePicker = mDatePickerView.getText().toString();
 
         boolean cancel = false;
         View focusView = null;
 
-        if (TextUtils.isEmpty(fullname)) {
-            mFullNameView.setError(getString(R.string.error_field_required));
-            focusView = mFullNameView;
+        if (TextUtils.isEmpty(datePicker)) {
+            mDatePickerView.setError(getString(R.string.error_field_required));
+            focusView = mDatePickerView;
             cancel = true;
         }
 
@@ -99,7 +139,7 @@ public class AddNewCustomerActivity extends AppCompatActivity {
             // Show a progress spinner, and kick off a background task to
             // perform the user login attempt.
             showProgress(true);
-            mCustomerTask = new CustomerActionTask(fullname, note);
+            mCustomerTask = new CustomerActionTask(datePicker);
             mCustomerTask.execute((Void) null);
         }
     }
@@ -145,12 +185,10 @@ public class AddNewCustomerActivity extends AppCompatActivity {
      */
     public class CustomerActionTask extends AsyncTask<Void, Void, Boolean> {
 
-        private final String mFullName;
-        private final String mNote;
+        private final String mDatePicker;
 
-        CustomerActionTask(String fullname, String note) {
-            mFullName = fullname;
-            mNote = note;
+        CustomerActionTask(String datePicker) {
+            mDatePicker = datePicker;
         }
 
         @Override
@@ -168,15 +206,13 @@ public class AddNewCustomerActivity extends AppCompatActivity {
         protected void onPostExecute(final Boolean success) {
             mCustomerTask = null;
             showProgress(false);
-            DateFormat currentDateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:00");
-            String fullDateIn = currentDateFormat.format(Utils.GetCurrentTimeByRoundFiveMinutes());
 
             if (success) {
                 FishingManager fishing = new FishingManager(getApplicationContext());
-                long fishingId = fishing.createFishingEntry(mFullName, fullDateIn, mNote);
+                Cursor cursor = fishing.getFishingEntries(mDatePicker);
                 finish();
             } else {
-                Utils.Alert(AddNewCustomerActivity.this, getString(R.string.action_error));
+                Utils.Alert(ReportActivity.this, getString(R.string.action_error));
             }
         }
 

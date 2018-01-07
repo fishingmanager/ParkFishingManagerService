@@ -1,1 +1,1 @@
-include ':app', ':library', ':samples'
+include ':app', ':library', ':samples', ':poi-3.7'

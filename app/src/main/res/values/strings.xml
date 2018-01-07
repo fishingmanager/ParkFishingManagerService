@@ -16,16 +16,17 @@
     <string name="fishing_status">Khách hàng này đang tham gia câu.</string>
 
     <string name="number_fishing">Mã Số</string>
+    <string name="order">Thứ Tự</string>
     <string name="fullname">Họ Tên</string>
     <string name="mobile">Điện Thoại</string>
     <string name="date_in">Giờ Vào</string>
     <string name="date_out">Giờ Ra</string>
     <string name="keep_hours">Gửi Giờ</string>
     <string name="no_keep_hours">Trả Giờ</string>
-    <string name="total_hours">Tổng Giờ</string>
+    <string name="total_hours">Số Giờ Câu</string>
     <string name="keep_fish">Gửi Cá (kg)</string>
     <string name="take_fish">Lấy Cá (kg)</string>
-    <string name="total_fish">Tổng Cá</string>
+    <string name="total_fish">Số Cá Câu</string>
     <string name="total_money">Tổng Tiền</string>
     <string name="note">Ghi Chú</string>
     <string name="package_fishing">Suất (Giờ)</string>
@@ -39,7 +40,8 @@
     <string name="fee_do_fish">Phí Làm Cá</string>
     <string name="total_all">Tổng</string>
     <string name="log">Lich Sử</string>
-    <string name="buy_fish">Mua Cá</string>
+    <string name="buy_fish">Tiền Mua Cá</string>
+    <string name="date">Ngày</string>
 
     <string name="customer_manager">Quản Lý KH</string>
     <string name="report">Báo Cáo</string>

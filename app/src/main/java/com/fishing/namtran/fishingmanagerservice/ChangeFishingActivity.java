@@ -4,11 +4,10 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 import android.database.Cursor;
-import android.support.v7.app.AppCompatActivity;
 import android.os.AsyncTask;
-
 import android.os.Build;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -29,12 +28,10 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
-import static java.lang.Math.round;
-
 /**
  * A login screen that offers login via email/password.
  */
-public class UpdateCustomerActivity extends AppCompatActivity {
+public class ChangeFishingActivity extends AppCompatActivity {
 
     /**
      * Keep track of the login task to ensure we can cancel it if requested.
@@ -63,7 +60,7 @@ public class UpdateCustomerActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_update_customer);
+        setContentView(R.layout.activity_change_fishing);
 
         mFishingId = getIntent().getStringExtra("fishingId");
 
@@ -98,6 +95,9 @@ public class UpdateCustomerActivity extends AppCompatActivity {
 
             mFullNameView.setText(fishings.getString(fishings.getColumnIndexOrThrow(Fishings.Properties.FULLNAME)));
             mDateIn = fishings.getString(fishings.getColumnIndexOrThrow(Fishings.Properties.DATE_IN));
+            mTotalFishView.setText(fishings.getString(fishings.getColumnIndexOrThrow(Fishings.Properties.TOTAL_FISH)));
+            mBuyFishView.setText(fishings.getString(fishings.getColumnIndexOrThrow(Fishings.Properties.BUY_FISH)));
+            mTotalMoneyView.setText(fishings.getString(fishings.getColumnIndexOrThrow(Fishings.Properties.TOTAL_MONEY)));
 
             try {
                 cal.setTime(dateFormat.parse(mDateIn));
@@ -145,7 +145,7 @@ public class UpdateCustomerActivity extends AppCompatActivity {
                 mBuyFishView.setText(mPriceBuyFish*totalFish + "");
                 mTotalMoneyView.setText((mFeePackage - mPriceBuyFish*totalFish) + "");
             }
-        });
+        }); 
     }
 
     public void GetTimeDateOutAndCalculateFeeFishing()
@@ -154,9 +154,9 @@ public class UpdateCustomerActivity extends AppCompatActivity {
         EditText dateOut = (EditText) mDateOutView;
 
         DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
-        Date currentDate = Utils.GetCurrentTimeByRoundFiveMinutes();
-        String fullDateOut = dateFormat.format(currentDate);
+        Date currentDate = new Date();
         dateOut.setText(String.format("%02d:%02d", currentDate.getHours(), currentDate.getMinutes()));
+        String fullDateOut = dateFormat.format(currentDate);
 
         try {
             if(dateOut != null) {
@@ -166,7 +166,7 @@ public class UpdateCustomerActivity extends AppCompatActivity {
 
                 if(diffHours < 0 || diffMinutes < 0) {
                     dateOut.setText("");
-                    Utils.Alert(UpdateCustomerActivity.this, "ERROR !");
+                    Utils.Alert(ChangeFishingActivity.this, "ERROR !");
                 }
                 else {
                     long totalFee = 0;
@@ -175,14 +175,17 @@ public class UpdateCustomerActivity extends AppCompatActivity {
 
                     totalHours.setText(String.format("%02d:%02d", diffHours, diffMinutes));
 
-                    if(diffHours > 3) {
-                        totalFee = point3Hours + ((diffHours - 3) * extra1Hour) + (extra1Hour / 60) * diffMinutes;
+                    if(diffHours > 3)
+                    {
+                        long extraHours = diffHours - 3;
+                        totalFee = point3Hours + ((extraHours * 60) + diffMinutes)/extra1Hour;
                     } else
                     {
                         totalFee = point3Hours;
                     }
+
                     mFeePackage = totalFee;
-                    mTotalMoneyView.setText(String.valueOf(totalFee));
+                    mTotalMoneyView.setText(mFeePackage + "");
                 }
             }
 
@@ -215,6 +218,7 @@ public class UpdateCustomerActivity extends AppCompatActivity {
         boolean cancel = false;
         View focusView = null;
 
+        // Check for a valid mobile, if the user entered one.
         if (TextUtils.isEmpty(dateOut)) {
             mDateOutView.setError(getString(R.string.error_field_required));
             focusView = mDateOutView;
@@ -315,6 +319,7 @@ public class UpdateCustomerActivity extends AppCompatActivity {
             DateFormat currentDateFormat = new SimpleDateFormat("yyyy/MM/dd");
             Date currentDate = new Date();
             String fullDateOut = currentDateFormat.format(currentDate) + " " + mDateOut + ":00";
+            DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
 
             if (success) {
                 finish();

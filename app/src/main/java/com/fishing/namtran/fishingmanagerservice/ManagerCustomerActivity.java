@@ -68,7 +68,11 @@ public class ManagerCustomerActivity extends AppCompatActivity { //BaseMenuActiv
         } else if (id == R.id.add_customer) {
             Utils.Redirect(getApplicationContext(), AddNewCustomerActivity.class);
             return true;
-        } else if (id == R.id.settings) {
+        } else if (id == R.id.report) {
+            Utils.Redirect(getApplicationContext(), ReportActivity.class);
+            return true;
+        }
+        else if (id == R.id.settings) {
             Utils.Redirect(getApplicationContext(), SettingsActivity.class);
             return true;
         }

@@ -41,7 +41,6 @@
                     android:hint="@string/fullname"
                     android:inputType="text"
                     android:maxLines="1"
-                    android:enabled="false"
                     android:singleLine="true" />
 
             </android.support.design.widget.TextInputLayout>
@@ -56,7 +55,6 @@
                     android:layout_height="wrap_content"
                     android:hint="@string/date_in"
                     android:maxLines="1"
-                    android:enabled="false"
                     android:singleLine="true" />
 
             </android.support.design.widget.TextInputLayout>
@@ -71,7 +69,6 @@
                     android:layout_height="wrap_content"
                     android:hint="@string/date_out"
                     android:maxLines="1"
-                    android:enabled="false"
                     android:singleLine="true" />
 
             </android.support.design.widget.TextInputLayout>
@@ -86,7 +83,6 @@
                     android:layout_height="wrap_content"
                     android:hint="@string/total_hours"
                     android:maxLines="1"
-                    android:enabled="false"
                     android:text="00:00"
                     android:singleLine="true" />
 
@@ -135,7 +131,6 @@
                     android:hint="@string/total_money"
                     android:maxLines="1"
                     android:inputType="number"
-                    android:enabled="false"
                     android:text="0"
                     android:singleLine="true" />
 
