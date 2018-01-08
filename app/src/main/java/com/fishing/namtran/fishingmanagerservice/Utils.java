@@ -5,6 +5,7 @@ import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.database.Cursor;
 import android.inputmethodservice.Keyboard;
 import android.os.Environment;
 import android.support.v4.app.DialogFragment;
@@ -15,6 +16,8 @@ import android.view.View;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.TimePicker;
+
+import com.fishing.namtran.fishingmanagerservice.dbconnection.Fishings;
 
 import org.apache.poi.hssf.usermodel.HSSFCellStyle;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
@@ -131,7 +134,7 @@ public class Utils extends FragmentActivity {
         return currentTime.getTime();
     }
 
-    public static boolean saveExcelFile(Context context, String fileName)
+    public static boolean saveExcelFile(Context context, String fileName, Cursor cursor)
     {
         //http://cuelogic.com/blog/creatingreading-an-excel-file-in-android/
         // check if available and not read only
@@ -159,21 +162,32 @@ public class Utils extends FragmentActivity {
         // Generate column headings
         Row row = sheet1.createRow(0);
 
-        c = row.createCell(0);
-        c.setCellValue("Item Number");
-        c.setCellStyle(cs);
+        String[] titles = { String.valueOf(R.string.fullname), String.valueOf(R.string.date_in), String.valueOf(R.string.date_out),
+                String.valueOf(R.string.total_hours), String.valueOf(R.string.buy_fish), String.valueOf(R.string.total_money), String.valueOf(R.string.note)};
 
-        c = row.createCell(1);
-        c.setCellValue("Quantity");
-        c.setCellStyle(cs);
+        for (int j = 0; j < titles.length; j++) {
+            c = row.createCell(j);
+            c.setCellValue(titles[j]);
+            c.setCellStyle(cs);
+        }
 
-        c = row.createCell(2);
-        c.setCellValue("Price");
-        c.setCellStyle(cs);
+        int i = 0;
+        String[] fieldNames = { Fishings.Properties.FULLNAME, Fishings.Properties.DATE_IN, Fishings.Properties.DATE_OUT,
+                "TOTAL_HOURS", Fishings.Properties.BUY_FISH, Fishings.Properties.TOTAL_MONEY, Fishings.Properties.NOTE};
+        while (cursor.moveToNext()) {
+            c = row.createCell(i);
+            if(fieldNames[i] == "TOTAL_HOURS") {
+                c.setCellValue("10:00");
+            } else {
+                c.setCellValue(cursor.getString(cursor.getColumnIndexOrThrow(fieldNames[i])));
+            }
+            c.setCellStyle(cs);
+            i++;
+        }
 
-        sheet1.setColumnWidth(0, (15 * 500));
-        sheet1.setColumnWidth(1, (15 * 500));
-        sheet1.setColumnWidth(2, (15 * 500));
+        //sheet1.setColumnWidth(0, (15 * 500));
+        //sheet1.setColumnWidth(1, (15 * 500));
+        //sheet1.setColumnWidth(2, (15 * 500));
 
         // Create a path where we will place our List of objects on external storage
         File file = new File(context.getExternalFilesDir(null), fileName);

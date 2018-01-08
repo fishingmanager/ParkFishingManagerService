@@ -29,6 +29,7 @@ import java.io.File;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 
 /**
  * A login screen that offers login via email/password.
@@ -73,6 +74,9 @@ public class ReportActivity extends AppCompatActivity {
             }
         });*/
 
+        DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd");
+        Date currentDate = new Date();
+        mDatePickerView.setText(dateFormat.format(currentDate));
 
         mDatePickerView.setOnClickListener(new View.OnClickListener()
         {
@@ -215,38 +219,13 @@ public class ReportActivity extends AppCompatActivity {
             if (success) {
                 FishingManager fishing = new FishingManager(getApplicationContext());
                 Cursor cursor = fishing.getFishingEntries(mDatePicker);
-                if(Utils.saveExcelFile(getApplicationContext(), "namtran3.xlsx"))
+
+                DateFormat dateFormat = new SimpleDateFormat("yyyy_MM_dd_HH_mm_ss");
+                Date currentDate = new Date();
+                final String fileName = "BaoCao_" + dateFormat.format(currentDate) + ".xlsx";
+
+                if(Utils.saveExcelFile(getApplicationContext(), fileName, cursor))
                 {
-                    //Utils.Alert(ReportActivity.this, getString(R.string.action_error));
-                    final String filename="namtran3.xlsx";
-                    final File filelocation = new File(getApplicationContext().getExternalFilesDir(null), filename); //Environment.getExternalStorageDirectory().getAbsolutePath()
-
-                    /*Uri path = Uri.fromFile(filelocation);
-                    Intent emailIntent = new Intent(Intent.ACTION_SEND);
-                    // set the type to 'email'
-                    emailIntent.setType("vnd.android.cursor.dir/email");
-                    String to[] = {"hienmong2002@gmail.com"};
-                    emailIntent.putExtra(Intent.EXTRA_EMAIL, to);
-                    // the attachment
-                    emailIntent.putExtra(Intent.EXTRA_STREAM, path);
-                    // the mail subject
-                    emailIntent.putExtra(Intent.EXTRA_SUBJECT, "Subject Test");
-                    //emailIntent.putExtra(Intent.EXTRA_CONTENT_ANNOTATIONS, "abcdsed");
-                    startActivity(emailIntent);
-                    */
-
-                    /*
-                    Intent intent = new Intent(Intent.ACTION_SENDTO);
-                    intent.setType("text/plain");
-                    String message="File to be shared is " + filename + ".";
-                    intent.putExtra(Intent.EXTRA_SUBJECT, "Subject");
-                    intent.putExtra(Intent.EXTRA_STREAM, Uri.parse( "file://"+filelocation));
-                    intent.putExtra(Intent.EXTRA_TEXT, message);
-                    intent.setData(Uri.parse("mailto:hienmong2002@gmail.com"));
-                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    startActivity(intent);
-                    */
-
                     new Thread(new Runnable() {
                         public void run() {
                             try {
@@ -254,7 +233,7 @@ public class ReportActivity extends AppCompatActivity {
                                         "parkfishingmanagerservice@gmail.com",
                                         "t260gOm3g");
                                 String env = getApplicationContext().getExternalFilesDir(null).getPath();
-                                sender.addAttachment(getApplicationContext().getExternalFilesDir(null) + "/" + filename);
+                                sender.addAttachment(getApplicationContext().getExternalFilesDir(null) + "/" + fileName);
                                 sender.sendMail("Test mail", "This mail has been sent from android app along with attachment",
                                         "parkfishingmanagerservice@gmail.com",
                                         "parkfishingmanagerservice@gmail.com");
