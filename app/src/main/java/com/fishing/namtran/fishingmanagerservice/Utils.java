@@ -131,7 +131,7 @@ public class Utils extends FragmentActivity {
         return currentTime.getTime();
     }
 
-    private static boolean saveExcelFile(Context context, String fileName)
+    public static boolean saveExcelFile(Context context, String fileName)
     {
         //http://cuelogic.com/blog/creatingreading-an-excel-file-in-android/
         // check if available and not read only

@@ -1,1 +1,1 @@
-include ':app', ':library', ':samples', ':poi-3.7'
+include ':app', ':library', ':samples', ':poi-3.7', ':activation', ':additionnal', ':mail'

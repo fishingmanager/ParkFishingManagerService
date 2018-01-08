@@ -17,7 +17,11 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
-    sourceSets { main { java.srcDirs = ['src/main/java', 'src/main/java/dbconnection'] } }
+    sourceSets {
+        main {
+            java.srcDirs = ['src/main/java', 'src/main/java/dbconnection', 'src/main/java/com/fishing/namtran/fishingmanagerservice/mail']
+        }
+    }
 }
 
 dependencies {
@@ -31,6 +35,9 @@ dependencies {
     compile 'com.android.support:support-v4:26.+'
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
     compile project(":poi-3.7")
+    compile project(":activation")
+    compile project(":additionnal")
+    compile project(":mail")
     testCompile 'junit:junit:4.12'
     debugCompile 'com.amitshekhar.android:debug-db:1.0.0'
 }

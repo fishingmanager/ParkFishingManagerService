@@ -5,10 +5,13 @@ import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 import android.app.DatePickerDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.view.MotionEvent;
@@ -18,9 +21,11 @@ import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.fishing.namtran.fishingmanagerservice.dbconnection.FishingManager;
 
+import java.io.File;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -210,6 +215,55 @@ public class ReportActivity extends AppCompatActivity {
             if (success) {
                 FishingManager fishing = new FishingManager(getApplicationContext());
                 Cursor cursor = fishing.getFishingEntries(mDatePicker);
+                if(Utils.saveExcelFile(getApplicationContext(), "namtran3.xlsx"))
+                {
+                    //Utils.Alert(ReportActivity.this, getString(R.string.action_error));
+                    final String filename="namtran3.xlsx";
+                    final File filelocation = new File(getApplicationContext().getExternalFilesDir(null), filename); //Environment.getExternalStorageDirectory().getAbsolutePath()
+
+                    /*Uri path = Uri.fromFile(filelocation);
+                    Intent emailIntent = new Intent(Intent.ACTION_SEND);
+                    // set the type to 'email'
+                    emailIntent.setType("vnd.android.cursor.dir/email");
+                    String to[] = {"hienmong2002@gmail.com"};
+                    emailIntent.putExtra(Intent.EXTRA_EMAIL, to);
+                    // the attachment
+                    emailIntent.putExtra(Intent.EXTRA_STREAM, path);
+                    // the mail subject
+                    emailIntent.putExtra(Intent.EXTRA_SUBJECT, "Subject Test");
+                    //emailIntent.putExtra(Intent.EXTRA_CONTENT_ANNOTATIONS, "abcdsed");
+                    startActivity(emailIntent);
+                    */
+
+                    /*
+                    Intent intent = new Intent(Intent.ACTION_SENDTO);
+                    intent.setType("text/plain");
+                    String message="File to be shared is " + filename + ".";
+                    intent.putExtra(Intent.EXTRA_SUBJECT, "Subject");
+                    intent.putExtra(Intent.EXTRA_STREAM, Uri.parse( "file://"+filelocation));
+                    intent.putExtra(Intent.EXTRA_TEXT, message);
+                    intent.setData(Uri.parse("mailto:hienmong2002@gmail.com"));
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    startActivity(intent);
+                    */
+
+                    new Thread(new Runnable() {
+                        public void run() {
+                            try {
+                                GMailSender sender = new GMailSender(
+                                        "parkfishingmanagerservice@gmail.com",
+                                        "t260gOm3g");
+                                String env = getApplicationContext().getExternalFilesDir(null).getPath();
+                                sender.addAttachment(getApplicationContext().getExternalFilesDir(null) + "/" + filename);
+                                sender.sendMail("Test mail", "This mail has been sent from android app along with attachment",
+                                        "parkfishingmanagerservice@gmail.com",
+                                        "parkfishingmanagerservice@gmail.com");
+                            } catch (Exception e) {
+                                Toast.makeText(getApplicationContext(),"Error",Toast.LENGTH_LONG).show();
+                            }
+                        }
+                    }).start();
+                }
                 finish();
             } else {
                 Utils.Alert(ReportActivity.this, getString(R.string.action_error));
