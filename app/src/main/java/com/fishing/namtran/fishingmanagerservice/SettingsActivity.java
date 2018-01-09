@@ -33,6 +33,9 @@ public class SettingsActivity extends AppCompatActivity {
     private EditText mPriceFishingView;
     private EditText mPackageFishingView;
     private EditText mPriceBuyFishView;
+    private EditText mServerEmailView;
+    private EditText mServerPassView;
+    private EditText mReceiveEmailView;
     private View mProgressView;
     private View mSubmitFormView;
 
@@ -45,6 +48,9 @@ public class SettingsActivity extends AppCompatActivity {
         mPriceFishingView = (EditText) findViewById(R.id.price_fishing);
         mPackageFishingView = (EditText) findViewById(R.id.package_fishing);
         mPriceBuyFishView = (EditText) findViewById(R.id.price_buy_fish);
+        mServerEmailView = (EditText) findViewById(R.id.server_email);
+        mServerPassView = (EditText) findViewById(R.id.server_pass);
+        mReceiveEmailView = (EditText) findViewById(R.id.receive_email);
         mSubmitFormView = findViewById(R.id.settings_form);
         mProgressView = findViewById(R.id.settings_progress);
 
@@ -55,6 +61,9 @@ public class SettingsActivity extends AppCompatActivity {
             mPackageFishingView.setText(cursor.getString(cursor.getColumnIndexOrThrow(Settings.Properties.PACKAGE_FISHING)));
             mPriceFishingView.setText(cursor.getString(cursor.getColumnIndexOrThrow(Settings.Properties.PRICE_FISHING)));
             mPriceBuyFishView.setText(cursor.getString(cursor.getColumnIndexOrThrow(Settings.Properties.PRICE_BUY_FISH)));
+            mServerEmailView.setText(cursor.getString(cursor.getColumnIndexOrThrow(Settings.Properties.SERVER_EMAIL)));
+            mServerPassView.setText(cursor.getString(cursor.getColumnIndexOrThrow(Settings.Properties.SERVER_PASSWORD)));
+            mReceiveEmailView.setText(cursor.getString(cursor.getColumnIndexOrThrow(Settings.Properties.RECEIVE_EMAIL)));
         }
         cursor.close();
 
@@ -86,6 +95,10 @@ public class SettingsActivity extends AppCompatActivity {
         String priceFishing = mPriceFishingView.getText().toString();
         String priceBuyFish = mPriceBuyFishView.getText().toString();
 
+        String serverEmail = mServerEmailView.getText().toString();
+        String serverPass = mServerPassView.getText().toString();
+        String receiveEmail = mReceiveEmailView.getText().toString();
+
         boolean cancel = false;
         View focusView = null;
 
@@ -109,7 +122,7 @@ public class SettingsActivity extends AppCompatActivity {
             // Show a progress spinner, and kick off a background task to
             // perform the user login attempt.
             showProgress(true);
-            mSettingsTask = new SettingsActionTask(packageFishing, priceFishing, priceBuyFish);
+            mSettingsTask = new SettingsActionTask(packageFishing, priceFishing, priceBuyFish, serverEmail, serverPass, receiveEmail);
             mSettingsTask.execute((Void) null);
         }
     }
@@ -158,11 +171,17 @@ public class SettingsActivity extends AppCompatActivity {
         private final String mPackageFishing;
         private final String mPriceFishing;
         private final String mPriceBuyFish;
+        private final String mServerEmail;
+        private final String mServerPass;
+        private final String mReceiveEmail;
 
-        SettingsActionTask(String packageFishing, String priceFishing, String priceBuyFish) {
+        SettingsActionTask(String packageFishing, String priceFishing, String priceBuyFish, String serverEmail, String serverPass, String receiveEmail) {
             mPackageFishing = packageFishing;
             mPriceFishing = priceFishing;
             mPriceBuyFish = priceBuyFish;
+            mServerEmail = serverEmail;
+            mServerPass = serverPass;
+            mReceiveEmail = receiveEmail;
         }
 
         @Override
@@ -182,7 +201,7 @@ public class SettingsActivity extends AppCompatActivity {
             showProgress(false);
             SettingsManager setting = new SettingsManager(getApplicationContext());
             if (success) {
-                if(setting.updateSettings("1", mPackageFishing, mPriceFishing, mPriceBuyFish))
+                if(setting.updateSettings("1", mPackageFishing, mPriceFishing, mPriceBuyFish, mServerEmail, mServerPass, mReceiveEmail))
                 {
                     finish();
                 }

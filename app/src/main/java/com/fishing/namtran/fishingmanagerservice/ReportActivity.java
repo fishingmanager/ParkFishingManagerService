@@ -24,6 +24,8 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.fishing.namtran.fishingmanagerservice.dbconnection.FishingManager;
+import com.fishing.namtran.fishingmanagerservice.dbconnection.Settings;
+import com.fishing.namtran.fishingmanagerservice.dbconnection.SettingsManager;
 
 import java.io.File;
 import java.text.DateFormat;
@@ -220,23 +222,36 @@ public class ReportActivity extends AppCompatActivity {
                 FishingManager fishing = new FishingManager(getApplicationContext());
                 Cursor cursor = fishing.getFishingEntries(mDatePicker);
 
-                DateFormat dateFormat = new SimpleDateFormat("yyyy_MM_dd_HH_mm_ss");
+                final DateFormat dateFormat = new SimpleDateFormat("yyyy_MM_dd_HH_mm_ss");
                 Date currentDate = new Date();
                 final String fileName = "BaoCao_" + dateFormat.format(currentDate) + ".xlsx";
+                final String body = (new SimpleDateFormat("yyyy/MM/dd HH:mm:ss")).format(currentDate);
 
                 if(Utils.saveExcelFile(getApplicationContext(), fileName, cursor))
                 {
                     new Thread(new Runnable() {
                         public void run() {
                             try {
+                                Cursor settings = (new SettingsManager(getApplicationContext())).getSettingEntry("1");
+                                String serverEmail = "";
+                                String serverPass = "";
+                                String receiveEmail = "";
+
+                                if (settings.moveToNext()) {
+                                    serverEmail = settings.getString(settings.getColumnIndexOrThrow(Settings.Properties.SERVER_EMAIL));
+                                    serverPass = settings.getString(settings.getColumnIndexOrThrow(Settings.Properties.SERVER_PASSWORD));
+                                    receiveEmail = settings.getString(settings.getColumnIndexOrThrow(Settings.Properties.RECEIVE_EMAIL));
+                                }
+                                settings.close();
+
                                 GMailSender sender = new GMailSender(
-                                        "parkfishingmanagerservice@gmail.com",
-                                        "t260gOm3g");
+                                        serverEmail,
+                                        serverPass);
                                 String env = getApplicationContext().getExternalFilesDir(null).getPath();
                                 sender.addAttachment(getApplicationContext().getExternalFilesDir(null) + "/" + fileName);
-                                sender.sendMail("Test mail", "This mail has been sent from android app along with attachment",
-                                        "parkfishingmanagerservice@gmail.com",
-                                        "parkfishingmanagerservice@gmail.com");
+                                sender.sendMail(getApplicationContext().getString(R.string.report), getApplicationContext().getString(R.string.report) + ": " + body,
+                                        serverEmail,
+                                        receiveEmail);
                             } catch (Exception e) {
                                 Toast.makeText(getApplicationContext(),"Error",Toast.LENGTH_LONG).show();
                             }

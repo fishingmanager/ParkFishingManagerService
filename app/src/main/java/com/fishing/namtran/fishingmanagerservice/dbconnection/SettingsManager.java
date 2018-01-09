@@ -19,7 +19,7 @@ public class SettingsManager {
         this.context = context;
     }
 
-    public boolean updateSettings(String mId, String mPackageFishing, String mPriceFishing, String mPriceBuyFish) {
+    public boolean updateSettings(String mId, String mPackageFishing, String mPriceFishing, String mPriceBuyFish, String mServerEmail, String mServerPass, String mReceiveEmail) {
         InitializeDatabase mDbHelper = new InitializeDatabase(context);
         db = mDbHelper.getWritableDatabase();
 
@@ -28,6 +28,9 @@ public class SettingsManager {
         values.put(Settings.Properties.PACKAGE_FISHING, mPackageFishing);
         values.put(Settings.Properties.PRICE_FISHING, mPriceFishing);
         values.put(Settings.Properties.PRICE_BUY_FISH, mPriceBuyFish);
+        values.put(Settings.Properties.SERVER_EMAIL, mServerEmail);
+        values.put(Settings.Properties.SERVER_PASSWORD, mServerPass);
+        values.put(Settings.Properties.RECEIVE_EMAIL, mReceiveEmail);
 
         // Which row to update, based on the title
         String selection = Settings.Properties._ID + " = ?";
@@ -55,7 +58,10 @@ public class SettingsManager {
         String[] projection = {
                 Settings.Properties.PACKAGE_FISHING,
                 Settings.Properties.PRICE_FISHING,
-                Settings.Properties.PRICE_BUY_FISH
+                Settings.Properties.PRICE_BUY_FISH,
+                Settings.Properties.SERVER_EMAIL,
+                Settings.Properties.SERVER_PASSWORD,
+                Settings.Properties.RECEIVE_EMAIL
         };
 
         // Filter results WHERE "title" = 'My Title'

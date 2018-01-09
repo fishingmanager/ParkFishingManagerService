@@ -13,6 +13,9 @@ public class InitializeDatabase extends SQLiteOpenHelper {
     private static final String SQL_CREATE_SETTINGS_TABLE =
             "CREATE TABLE IF NOT EXISTS " + Settings.Properties.TABLE_NAME + " (" +
                     Settings.Properties._ID + " INTEGER PRIMARY KEY," +
+                    Settings.Properties.SERVER_EMAIL + " TEXT," +
+                    Settings.Properties.SERVER_PASSWORD + " TEXT," +
+                    Settings.Properties.RECEIVE_EMAIL + " TEXT," +
                     Settings.Properties.PACKAGE_FISHING + " INTEGER," +
                     Settings.Properties.PRICE_FISHING + " INTEGER," +
                     Settings.Properties.PRICE_BUY_FISH + " INTEGER); ";
@@ -55,9 +58,12 @@ public class InitializeDatabase extends SQLiteOpenHelper {
     private static final String SQL_CREATE_SETTINGS_RECORDS =
             "INSERT INTO " + Settings.Properties.TABLE_NAME + " (" +
                     Settings.Properties._ID + "," +
+                    Settings.Properties.SERVER_EMAIL + "," +
+                    Settings.Properties.SERVER_PASSWORD + "," +
+                    Settings.Properties.RECEIVE_EMAIL + "," +
                     Settings.Properties.PACKAGE_FISHING + "," +
                     Settings.Properties.PRICE_FISHING + "," +
-                    Settings.Properties.PRICE_BUY_FISH + ") VALUES ( 1, 3, 120000, 12000 ); ";
+                    Settings.Properties.PRICE_BUY_FISH + ") VALUES ( 1, 'parkfishingmanagerservice@gmail.com', 't260gOm3g', 'parkfishingmanagerservice@gmail.com', 3, 120000, 12000 ); ";
 
     private static final String SQL_CREATE_FISHINGS_RECORDS =
             "INSERT INTO " + Fishings.Properties.TABLE_NAME + " (" +

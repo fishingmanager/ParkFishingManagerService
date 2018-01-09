@@ -31,6 +31,9 @@ import org.apache.poi.ss.usermodel.Workbook;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -157,37 +160,49 @@ public class Utils extends FragmentActivity {
 
         //New Sheet
         Sheet sheet1 = null;
-        sheet1 = wb.createSheet("myOrder");
+        sheet1 = wb.createSheet("Report");
 
         // Generate column headings
         Row row = sheet1.createRow(0);
 
-        String[] titles = { String.valueOf(R.string.fullname), String.valueOf(R.string.date_in), String.valueOf(R.string.date_out),
-                String.valueOf(R.string.total_hours), String.valueOf(R.string.buy_fish), String.valueOf(R.string.total_money), String.valueOf(R.string.note)};
+        String[] titles = { context.getString(R.string.fullname), context.getString(R.string.date_in), context.getString(R.string.date_out),
+                context.getString(R.string.total_hours), context.getString(R.string.buy_fish), context.getString(R.string.total_money), context.getString(R.string.note)};
 
         for (int j = 0; j < titles.length; j++) {
             c = row.createCell(j);
             c.setCellValue(titles[j]);
             c.setCellStyle(cs);
+            sheet1.setColumnWidth(j, (15 * 300));
         }
 
-        int i = 0;
         String[] fieldNames = { Fishings.Properties.FULLNAME, Fishings.Properties.DATE_IN, Fishings.Properties.DATE_OUT,
                 "TOTAL_HOURS", Fishings.Properties.BUY_FISH, Fishings.Properties.TOTAL_MONEY, Fishings.Properties.NOTE};
         while (cursor.moveToNext()) {
-            c = row.createCell(i);
-            if(fieldNames[i] == "TOTAL_HOURS") {
-                c.setCellValue("10:00");
-            } else {
-                c.setCellValue(cursor.getString(cursor.getColumnIndexOrThrow(fieldNames[i])));
+            row = sheet1.createRow(cursor.getPosition() + 1);
+            for (int i = 0; i < fieldNames.length; i++) {
+                c = row.createCell(i);
+                if (fieldNames[i] == "TOTAL_HOURS") {
+                    String dateIn = cursor.getString(cursor.getColumnIndexOrThrow(Fishings.Properties.DATE_IN));
+                    String dateOut = cursor.getString(cursor.getColumnIndexOrThrow(Fishings.Properties.DATE_OUT));
+                    DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+                    try {
+                        Calendar cal = Calendar.getInstance();
+                        cal.setTime(dateFormat.parse(dateIn));
+                        if(dateOut != null) {
+                            cal.setTime(dateFormat.parse(dateOut));
+                            long diff = (dateFormat.parse(dateOut).getTime() - dateFormat.parse(dateIn).getTime());
+                            long diffMinutes = diff / (60 * 1000) % 60;
+                            long diffHours = diff / (60 * 60 * 1000);
+                            c.setCellValue(String.format("%02d:%02d", diffHours, diffMinutes));
+                        }
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    }
+                } else {
+                    c.setCellValue(cursor.getString(cursor.getColumnIndexOrThrow(fieldNames[i])));
+                }
             }
-            c.setCellStyle(cs);
-            i++;
         }
-
-        //sheet1.setColumnWidth(0, (15 * 500));
-        //sheet1.setColumnWidth(1, (15 * 500));
-        //sheet1.setColumnWidth(2, (15 * 500));
 
         // Create a path where we will place our List of objects on external storage
         File file = new File(context.getExternalFilesDir(null), fileName);

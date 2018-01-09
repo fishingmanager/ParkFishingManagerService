@@ -73,6 +73,37 @@ public class FishingManager {
         return true;
     }
 
+    public boolean changeCloseFishingEntry(String mFishingId, String fullname, String mDateIn, String mDateOut, String mBuyFish, String mTotalFish, String mTotalMoney, String mNote) {
+
+        InitializeDatabase mDbHelper = new InitializeDatabase(context);
+        db = mDbHelper.getWritableDatabase();
+
+        // Create a new map of values, where column names are the keys
+        ContentValues values = new ContentValues();
+        values.put(Fishings.Properties.FULLNAME, fullname);
+        values.put(Fishings.Properties.DATE_IN, mDateIn);
+        values.put(Fishings.Properties.DATE_OUT, mDateOut);
+        values.put(Fishings.Properties.BUY_FISH, mBuyFish);
+        values.put(Fishings.Properties.TOTAL_FISH, mTotalFish);
+        values.put(Fishings.Properties.TOTAL_MONEY, mTotalMoney);
+        values.put(Fishings.Properties.NOTE, mNote);
+
+        // Which row to update, based on the title
+        String selection = Fishings.Properties._ID + " = ?";
+        String[] selectionArgs = { mFishingId };
+
+        //Update fishings
+        db.update(
+                Fishings.Properties.TABLE_NAME,
+                values,
+                selection,
+                selectionArgs);
+
+        //close connection
+        db.close();
+        return true;
+    }
+
     public Cursor getFishingAllEntries() {
         InitializeDatabase mDbHelper = new InitializeDatabase(context);
         db = mDbHelper.getReadableDatabase();

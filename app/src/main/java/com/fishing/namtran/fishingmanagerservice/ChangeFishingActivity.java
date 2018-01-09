@@ -36,7 +36,7 @@ public class ChangeFishingActivity extends AppCompatActivity {
     /**
      * Keep track of the login task to ensure we can cancel it if requested.
      */
-    private CustomerActionTask mCustomerTask = null;
+    private ChangeFishingEntryActionTask mChangeFishingEntryTask = null;
 
     // UI references.
     private AutoCompleteTextView mFullNameView;
@@ -51,6 +51,7 @@ public class ChangeFishingActivity extends AppCompatActivity {
     private View mSubmitFormView;
     private String mFishingId;
     private String mDateIn;
+    private String mDateOut;
     private double mBuyFish;
     private long mFeePackage;
     private int mPriceBuyFish;
@@ -76,14 +77,11 @@ public class ChangeFishingActivity extends AppCompatActivity {
         mSubmitFormView = findViewById(R.id.update_customer_form);
         mProgressView = findViewById(R.id.update_customer_progress);
 
-        int packagePrice = 0;
-
         Cursor fishings = (new FishingManager(getApplicationContext())).getFishingEntriesById(mFishingId);
         Cursor settings = (new SettingsManager(getApplicationContext())).getSettingEntry("1");
 
         if (settings.moveToNext()) {
             mPriceFishing = settings.getInt(settings.getColumnIndexOrThrow(Settings.Properties.PRICE_FISHING));
-            packagePrice = settings.getInt(settings.getColumnIndexOrThrow(Settings.Properties.PACKAGE_FISHING));
             mPriceBuyFish = settings.getInt(settings.getColumnIndexOrThrow(Settings.Properties.PRICE_BUY_FISH));
         }
         settings.close();
@@ -98,9 +96,15 @@ public class ChangeFishingActivity extends AppCompatActivity {
             mTotalFishView.setText(fishings.getString(fishings.getColumnIndexOrThrow(Fishings.Properties.TOTAL_FISH)));
             mBuyFishView.setText(fishings.getString(fishings.getColumnIndexOrThrow(Fishings.Properties.BUY_FISH)));
             mTotalMoneyView.setText(fishings.getString(fishings.getColumnIndexOrThrow(Fishings.Properties.TOTAL_MONEY)));
+            mDateOut = fishings.getString(fishings.getColumnIndexOrThrow(Fishings.Properties.DATE_OUT));
 
             try {
                 cal.setTime(dateFormat.parse(mDateIn));
+                mDateOutView.setText(String.format("%02d:%02d", dateFormat.parse(mDateOut).getHours(), dateFormat.parse(mDateOut).getMinutes()));
+                long diff = (dateFormat.parse(mDateOut).getTime() - dateFormat.parse(mDateIn).getTime());
+                long diffMinutes = diff / (60 * 1000) % 60;
+                long diffHours = diff / (60 * 60 * 1000);
+                mTotalHoursView.setText(String.format("%02d:%02d", diffHours, diffMinutes));
             } catch (ParseException e) {
                 e.printStackTrace();
             }
@@ -119,79 +123,6 @@ public class ChangeFishingActivity extends AppCompatActivity {
                 attemptSubmit();
             }
         });
-
-        GetTimeDateOutAndCalculateFeeFishing();
-
-        mTotalFishView.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                String totalFishText = mTotalFishView.getText().toString();
-                int totalFish = 0;
-
-                if(!totalFishText.equals(""))
-                {
-                    totalFish = Integer.parseInt(mTotalFishView.getText().toString());
-                }
-                mBuyFishView.setText(mPriceBuyFish*totalFish + "");
-                mTotalMoneyView.setText((mFeePackage - mPriceBuyFish*totalFish) + "");
-            }
-        }); 
-    }
-
-    public void GetTimeDateOutAndCalculateFeeFishing()
-    {
-        EditText totalHours = (EditText) mTotalHoursView;
-        EditText dateOut = (EditText) mDateOutView;
-
-        DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
-        Date currentDate = new Date();
-        dateOut.setText(String.format("%02d:%02d", currentDate.getHours(), currentDate.getMinutes()));
-        String fullDateOut = dateFormat.format(currentDate);
-
-        try {
-            if(dateOut != null) {
-                long diff = (dateFormat.parse(fullDateOut).getTime() - dateFormat.parse(mDateIn).getTime());
-                long diffMinutes = diff / (60 * 1000) % 60;
-                long diffHours = diff / (60 * 60 * 1000);
-
-                if(diffHours < 0 || diffMinutes < 0) {
-                    dateOut.setText("");
-                    Utils.Alert(ChangeFishingActivity.this, "ERROR !");
-                }
-                else {
-                    long totalFee = 0;
-                    long point3Hours = mPriceFishing;
-                    long extra1Hour = 30000;
-
-                    totalHours.setText(String.format("%02d:%02d", diffHours, diffMinutes));
-
-                    if(diffHours > 3)
-                    {
-                        long extraHours = diffHours - 3;
-                        totalFee = point3Hours + ((extraHours * 60) + diffMinutes)/extra1Hour;
-                    } else
-                    {
-                        totalFee = point3Hours;
-                    }
-
-                    mFeePackage = totalFee;
-                    mTotalMoneyView.setText(mFeePackage + "");
-                }
-            }
-
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
     }
 
     /**
@@ -200,7 +131,7 @@ public class ChangeFishingActivity extends AppCompatActivity {
      * errors are presented and no actual login attempt is made.
      */
     private void attemptSubmit() {
-        if (mCustomerTask != null) {
+        if (mChangeFishingEntryTask != null) {
             return;
         }
 
@@ -208,7 +139,9 @@ public class ChangeFishingActivity extends AppCompatActivity {
         mDateOutView.setError(null);
 
         // Store values at the time of the login attempt.
+        String dateIn = mDatInView.getText().toString();
         String dateOut = mDateOutView.getText().toString();
+        String fullname = mFullNameView.getText().toString();
         String fishingId = mFishingId;
         String totalFish = mTotalFishView.getText().toString();
         String buyFish = mBuyFishView.getText().toString();
@@ -218,13 +151,6 @@ public class ChangeFishingActivity extends AppCompatActivity {
         boolean cancel = false;
         View focusView = null;
 
-        // Check for a valid mobile, if the user entered one.
-        if (TextUtils.isEmpty(dateOut)) {
-            mDateOutView.setError(getString(R.string.error_field_required));
-            focusView = mDateOutView;
-            cancel = true;
-        }
-
         if (cancel) {
             // There was an error; don't attempt login and focus the first
             // form field with an error.
@@ -233,14 +159,9 @@ public class ChangeFishingActivity extends AppCompatActivity {
             // Show a progress spinner, and kick off a background task to
             // perform the user login attempt.
             showProgress(true);
-            mCustomerTask = new CustomerActionTask(fishingId, dateOut, totalFish, buyFish, totalMoney, note);
-            mCustomerTask.execute((Void) null);
+            mChangeFishingEntryTask = new ChangeFishingEntryActionTask(fishingId, fullname, dateIn, dateOut, totalFish, buyFish, totalMoney, note);
+            mChangeFishingEntryTask.execute((Void) null);
         }
-    }
-
-    private boolean isMobileValid(String mobile) {
-        //TODO: Replace this with your own logic
-        return mobile.length() >= 4;
     }
 
     /**
@@ -282,18 +203,22 @@ public class ChangeFishingActivity extends AppCompatActivity {
     /**
      * Represents an asynchronous action task
      */
-    public class CustomerActionTask extends AsyncTask<Void, Void, Boolean> {
+    public class ChangeFishingEntryActionTask extends AsyncTask<Void, Void, Boolean> {
 
         private final String mFishingId;
         private final String mDateOut;
+        private final String mDateIn;
+        private final String mFullName;
         private final String mBuyFish;
         private final String mTotalFish;
         private final String mTotalMoney;
         private final String mNote;
 
-        CustomerActionTask(String fishingId, String dateOut, String totalFish, String buyFish, String totalMoney, String note) {
+        ChangeFishingEntryActionTask(String fishingId, String fullname, String dateIn, String dateOut, String totalFish, String buyFish, String totalMoney, String note) {
             mFishingId = fishingId;
             mDateOut = dateOut;
+            mDateIn = dateIn;
+            mFullName = fullname;
             mBuyFish = buyFish;
             mTotalFish = totalFish;
             mTotalMoney = totalMoney;
@@ -313,19 +238,19 @@ public class ChangeFishingActivity extends AppCompatActivity {
 
         @Override
         protected void onPostExecute(final Boolean success) {
-            mCustomerTask = null;
+            mChangeFishingEntryTask = null;
             showProgress(false);
 
             DateFormat currentDateFormat = new SimpleDateFormat("yyyy/MM/dd");
             Date currentDate = new Date();
             String fullDateOut = currentDateFormat.format(currentDate) + " " + mDateOut + ":00";
-            DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+            String fullDateIn = currentDateFormat.format(currentDate) + " " + mDateIn + ":00";
 
             if (success) {
                 finish();
                 FishingManager fishingManager = new FishingManager(getApplicationContext());
 
-                if(fishingManager.updateCloseFishingEntry(mFishingId, fullDateOut, mBuyFish, mTotalFish, mTotalMoney, mNote)) {
+                if(fishingManager.changeCloseFishingEntry(mFishingId, mFullName, fullDateIn, fullDateOut, mBuyFish, mTotalFish, mTotalMoney, mNote)) {
                     Utils.Redirect(getApplicationContext(), ManagerCustomerActivity.class);
                 }
                 else {
@@ -338,7 +263,7 @@ public class ChangeFishingActivity extends AppCompatActivity {
 
         @Override
         protected void onCancelled() {
-            mCustomerTask = null;
+            mChangeFishingEntryTask = null;
             showProgress(false);
         }
     }

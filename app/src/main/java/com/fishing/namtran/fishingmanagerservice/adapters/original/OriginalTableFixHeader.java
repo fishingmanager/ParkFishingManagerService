@@ -4,6 +4,7 @@ import android.app.Dialog;
 import android.content.Context;
 import android.database.Cursor;
 import android.support.design.widget.Snackbar;
+import android.support.v4.content.ContextCompat;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -50,25 +51,22 @@ public class OriginalTableFixHeader {
         adapter.setSection(body);
 
         setListeners(adapter);
-        //onLoad(adapter);
+        onLoad(adapter);
         return adapter;
     }
 
     private void onLoad(final OriginalTableFixHeaderAdapter adapter)
     {
-        Nexus ne = adapter.getBody().get(1);
         //Utils.Alert(context, ne.data[1]);
         //adapter.inflateBody().textView.setTextColor(ContextCompat.getColor(context, R.color.colorBlue));
-
-        TableFixHeaderAdapter.OnLoad<Nexus, OriginalCellViewGroup> load = new TableFixHeaderAdapter.OnLoad<Nexus, OriginalCellViewGroup>()
+        for (int i = 1; i <= adapter.getBody().size(); i++)
         {
-            @Override
-            public void onLoad(Nexus item, OriginalCellViewGroup viewGroup)
-            {
-                //viewGroup.textView.setTextColor(ContextCompat.getColor(context, R.color.colorBlue));
-                Utils.Alert(context, item.data[1]);
-            }
-        };
+            Nexus ne = adapter.getBody().get(2);
+            //Utils.Alert(context, ne.data[1]);
+            adapter.inflateFirstBody().vg_root.setBackgroundColor(ContextCompat.getColor(context, R.color.colorDarkGray));
+            //adapter.inflateBody().textView.setTextColor(ContextCompat.getColor(context, R.color.colorBlue));
+        }
+
     }
 
     private void setListeners(final OriginalTableFixHeaderAdapter adapter) {
@@ -111,6 +109,13 @@ public class OriginalTableFixHeader {
             }
         };
 
+        TableFixHeaderAdapter.BodyBinder<Nexus> bodyBinder = new TableFixHeaderAdapter.BodyBinder<Nexus>() {
+            @Override
+            public void bindBody(Nexus item, int row, int column) {
+                Utils.Alert(context, item.data[1]);
+            }
+        };
+
         //adapter.setClickListenerFirstHeader(clickListenerHeader);
         //adapter.setClickListenerHeader(clickListenerHeader);
         adapter.setClickListenerFirstBody(clickListenerBody);
@@ -122,11 +127,10 @@ public class OriginalTableFixHeader {
     private void callLoginDialog(final Class<?> _class, final String fishingId)
     {
         final Dialog myDialog = new Dialog(context);
-        myDialog.setContentView(R.layout.activity_login);
+        myDialog.setContentView(R.layout.activity_login_change_fishing);
         myDialog.setCancelable(true);
-        Button login = (Button) myDialog.findViewById(R.id.email_sign_in_button);
+        Button login = (Button) myDialog.findViewById(R.id.password_button);
 
-        final EditText emailaddr = (EditText) myDialog.findViewById(R.id.email);
         final EditText password = (EditText) myDialog.findViewById(R.id.password);
         myDialog.show();
 
@@ -136,7 +140,7 @@ public class OriginalTableFixHeader {
             public void onClick(View v)
             {
                 UserManager user = new UserManager(context);
-                if(user.UserLoginbyRole(emailaddr.getText().toString(), password.getText().toString(), "1"))
+                if(user.UserLoginbyRole("can@gmail.com", password.getText().toString(), "1"))
                 {
                     myDialog.dismiss();
                     Utils.Redirect(context, _class, "fishingId", fishingId);

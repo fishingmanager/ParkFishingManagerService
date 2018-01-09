@@ -42,6 +42,10 @@
     <string name="log">Lich Sử</string>
     <string name="buy_fish">Tiền Mua Cá</string>
     <string name="date">Ngày</string>
+    <string name="server_email">Server Email</string>
+    <string name="server_pass">Server Password</string>
+    <string name="receive_email">Email Nhận</string>
+    <string name="access">Truy Cập</string>
 
     <string name="customer_manager">Quản Lý KH</string>
     <string name="report">Báo Cáo</string>
