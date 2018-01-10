@@ -55,7 +55,6 @@ public class OriginalTableFixHeaderAdapter extends TableFixHeaderAdapter<
     protected List<Integer> getHeaderWidths() {
         Integer[] witdhs = {
                 (int) context.getResources().getDimension(R.dimen._100dp),
-                (int) context.getResources().getDimension(R.dimen._80dp),
                 (int) context.getResources().getDimension(R.dimen._100dp),
                 (int) context.getResources().getDimension(R.dimen._60dp),
                 (int) context.getResources().getDimension(R.dimen._60dp),

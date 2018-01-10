@@ -36,11 +36,10 @@ public class Nexus {
                 ram };
     }
 
-    public Nexus(String order, String id, String fullname, String dateIn, String dateOut, String totalHours, String totalFish, String buyFish, String totalMoney, String note) {
+    public Nexus(String order, String fullname, String dateIn, String dateOut, String totalHours, String totalFish, String buyFish, String totalMoney, String note) {
         this.type = null;
         data = new String[] {
                 order,
-                id,
                 fullname,
                 dateIn,
                 dateOut,

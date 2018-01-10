@@ -46,6 +46,7 @@
     <string name="server_pass">Server Password</string>
     <string name="receive_email">Email Nhận</string>
     <string name="access">Truy Cập</string>
+    <string name="email_unsuccess">Gửi Email Không Thành Công</string>
 
     <string name="customer_manager">Quản Lý KH</string>
     <string name="report">Báo Cáo</string>

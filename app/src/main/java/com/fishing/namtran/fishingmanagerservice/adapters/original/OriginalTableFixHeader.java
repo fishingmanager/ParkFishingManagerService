@@ -6,8 +6,10 @@ import android.database.Cursor;
 import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
 import android.view.View;
+import android.view.animation.Interpolator;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.fishing.namtran.fishingmanagerservice.ChangeFishingActivity;
 import com.fishing.namtran.fishingmanagerservice.R;
@@ -34,7 +36,6 @@ import java.util.List;
 public class OriginalTableFixHeader {
     private Context context;
     private int totalItems;
-    private int totalColumn = 10;
 
     public OriginalTableFixHeader(Context context) {
         this.context = context;
@@ -51,7 +52,7 @@ public class OriginalTableFixHeader {
         adapter.setSection(body);
 
         setListeners(adapter);
-        onLoad(adapter);
+        //onLoad(adapter);
         return adapter;
     }
 
@@ -61,12 +62,11 @@ public class OriginalTableFixHeader {
         //adapter.inflateBody().textView.setTextColor(ContextCompat.getColor(context, R.color.colorBlue));
         for (int i = 1; i <= adapter.getBody().size(); i++)
         {
-            Nexus ne = adapter.getBody().get(2);
+            //Nexus ne = adapter.getBody().get(2);
             //Utils.Alert(context, ne.data[1]);
-            adapter.inflateFirstBody().vg_root.setBackgroundColor(ContextCompat.getColor(context, R.color.colorDarkGray));
+            //adapter.inflateFirstBody().vg_root.setBackgroundColor(ContextCompat.getColor(context, R.color.colorDarkGray));
             //adapter.inflateBody().textView.setTextColor(ContextCompat.getColor(context, R.color.colorBlue));
         }
-
     }
 
     private void setListeners(final OriginalTableFixHeaderAdapter adapter) {
@@ -84,13 +84,27 @@ public class OriginalTableFixHeader {
                 //viewGroup.vg_root.setBackgroundColor(ContextCompat.getColor(context, R.color.colorYellow));
 
                 if(totalItems != row) {
-                    if(item.data[4] == "")
+                    int fishingId = 0;
+                    DateFormat sqlDateFormat = new SimpleDateFormat("yyyy/MM/dd");
+                    Date currentDate = new Date();
+                    Cursor fishingEntries = (new FishingManager(context)).getFishingEntries(sqlDateFormat.format(currentDate));
+
+                    while (fishingEntries.moveToNext())
                     {
-                        Utils.Redirect(context, UpdateCustomerActivity.class, "fishingId", item.data[1]);
+                        if((fishingEntries.getPosition() + 1) == Integer.valueOf(item.data[0])) {
+                            fishingId =  fishingEntries.getInt(fishingEntries.getColumnIndexOrThrow(Fishings.Properties._ID));
+                            break;
+                        }
+                    }
+                    fishingEntries.close();
+
+                    if(item.data[3] == "")
+                    {
+                        Utils.Redirect(context, UpdateCustomerActivity.class, "fishingId", String.valueOf(fishingId));
                     }
                     else
                     {
-                        callLoginDialog(ChangeFishingActivity.class, item.data[1]);
+                        callLoginDialog(ChangeFishingActivity.class, String.valueOf(fishingId));
                     }
                 }
             }
@@ -140,19 +154,20 @@ public class OriginalTableFixHeader {
             public void onClick(View v)
             {
                 UserManager user = new UserManager(context);
-                if(user.UserLoginbyRole("can@gmail.com", password.getText().toString(), "1"))
+                if(user.UserLoginbyRole("admin@gmail.com", password.getText().toString(), "1"))
                 {
                     myDialog.dismiss();
                     Utils.Redirect(context, _class, "fishingId", fishingId);
                 }
-                myDialog.setTitle("ERROR 123");
+                else {
+                    Toast.makeText(context, context.getString(R.string.error_incorrect_password), Toast.LENGTH_LONG).show();
+                }
             }
         });
     }
 
     private List<String> getHeader() {
         final String headers[] = {
-                context.getString(R.string.number_fishing),
                 context.getString(R.string.fullname),
                 context.getString(R.string.date_in),
                 context.getString(R.string.date_out),
@@ -214,7 +229,6 @@ public class OriginalTableFixHeader {
 
             items.add(new Nexus(
                     order + "",
-                    fishings.getString(fishings.getColumnIndexOrThrow(Fishings.Properties._ID)),
                     fishings.getString(fishings.getColumnIndexOrThrow(Fishings.Properties.FULLNAME)),
                     dateInView,
                     dateOutView,
@@ -225,7 +239,7 @@ public class OriginalTableFixHeader {
                     fishings.getString(fishings.getColumnIndexOrThrow(Fishings.Properties.NOTE))));
             order++;
         }
-        items.add(new Nexus(context.getString(R.string.total_all) + ": " + onlineCount + "/" + totalFisher, "", "", "", "", "", "", "", totalMoney + "", ""));
+        items.add(new Nexus(context.getString(R.string.total_all) + ": " + onlineCount + "/" + totalFisher, "", "", "", "", "", "", totalMoney + "", ""));
         totalItems = items.size() - 1;
         fishings.close();
         return items;

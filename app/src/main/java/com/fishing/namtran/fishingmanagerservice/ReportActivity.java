@@ -253,7 +253,7 @@ public class ReportActivity extends AppCompatActivity {
                                         serverEmail,
                                         receiveEmail);
                             } catch (Exception e) {
-                                Toast.makeText(getApplicationContext(),"Error",Toast.LENGTH_LONG).show();
+                                Toast.makeText(getApplicationContext(), getApplicationContext().getString(R.string.email_unsuccess), Toast.LENGTH_LONG).show();
                             }
                         }
                     }).start();

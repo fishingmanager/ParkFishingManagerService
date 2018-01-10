@@ -23,11 +23,13 @@ import com.fishing.namtran.fishingmanagerservice.dbconnection.Fishings;
 import com.fishing.namtran.fishingmanagerservice.dbconnection.Settings;
 import com.fishing.namtran.fishingmanagerservice.dbconnection.SettingsManager;
 
+import java.math.BigDecimal;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.regex.Pattern;
 
 import static java.lang.Math.round;
 
@@ -136,14 +138,14 @@ public class UpdateCustomerActivity extends AppCompatActivity {
             @Override
             public void afterTextChanged(Editable s) {
                 String totalFishText = mTotalFishView.getText().toString();
-                int totalFish = 0;
+                double totalFish = 0;
 
-                if(!totalFishText.equals(""))
+                if(!totalFishText.equals("") && totalFishText.charAt(0) != '.')
                 {
-                    totalFish = Integer.parseInt(mTotalFishView.getText().toString());
+                    totalFish = Double.parseDouble(totalFishText);
                 }
-                mBuyFishView.setText(mPriceBuyFish*totalFish + "");
-                mTotalMoneyView.setText((mFeePackage - mPriceBuyFish*totalFish) + "");
+                mBuyFishView.setText(BigDecimal.valueOf(mPriceBuyFish).multiply(BigDecimal.valueOf(totalFish))+ "");
+                mTotalMoneyView.setText((BigDecimal.valueOf(mFeePackage).subtract(BigDecimal.valueOf(mPriceBuyFish).multiply(BigDecimal.valueOf(totalFish)))) + "");
             }
         });
     }
@@ -320,7 +322,7 @@ public class UpdateCustomerActivity extends AppCompatActivity {
                 finish();
                 FishingManager fishingManager = new FishingManager(getApplicationContext());
 
-                if(fishingManager.updateCloseFishingEntry(mFishingId, fullDateOut, mBuyFish, mTotalFish, mTotalMoney, mNote)) {
+                if(fishingManager.updateCloseFishingEntry(mFishingId, fullDateOut, mBuyFish.equals("") ? "0" : mBuyFish, mTotalFish.equals("") ? "0" : mTotalFish, mTotalMoney, mNote)) {
                     Utils.Redirect(getApplicationContext(), ManagerCustomerActivity.class);
                 }
                 else {

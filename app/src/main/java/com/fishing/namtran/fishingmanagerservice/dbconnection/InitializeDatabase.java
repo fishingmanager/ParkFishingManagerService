@@ -46,14 +46,14 @@ public class InitializeDatabase extends SQLiteOpenHelper {
                     User.Properties._ID + "," +
                     User.Properties.ROLE + "," +
                     User.Properties.EMAIL + "," +
-                    User.Properties.PASSWORD + ") VALUES ( 1, 0, 'nam@gmail.com', '12341234'); ";
+                    User.Properties.PASSWORD + ") VALUES ( 1, 0, 'user@gmail.com', 'user1234'); ";
 
     private static final String SQL_CREATE_USERS_RECORDS_2 =
                     "INSERT INTO " + User.Properties.TABLE_NAME + " (" +
                     User.Properties._ID + "," +
                     User.Properties.ROLE + "," +
                     User.Properties.EMAIL + "," +
-                    User.Properties.PASSWORD + ") VALUES ( 2, 1, 'can@gmail.com', '12341234'); ";
+                    User.Properties.PASSWORD + ") VALUES ( 2, 1, 'admin@gmail.com', 'admin1234'); ";
 
     private static final String SQL_CREATE_SETTINGS_RECORDS =
             "INSERT INTO " + Settings.Properties.TABLE_NAME + " (" +

@@ -98,8 +98,8 @@
                     android:layout_height="wrap_content"
                     android:hint="@string/total_fish"
                     android:maxLines="1"
-                    android:inputType="number"
-                    android:maxLength="4"
+                    android:inputType="numberDecimal"
+                    android:maxLength="6"
                     android:singleLine="true" />
 
             </android.support.design.widget.TextInputLayout>
@@ -130,7 +130,7 @@
                     android:layout_height="wrap_content"
                     android:hint="@string/total_money"
                     android:maxLines="1"
-                    android:inputType="number"
+                    android:inputType="numberDecimal"
                     android:text="0"
                     android:singleLine="true" />
 
