@@ -1,14 +1,17 @@
 package com.fishing.namtran.fishingmanagerservice.adapters.original;
 
 import android.app.Dialog;
+import android.app.TimePickerDialog;
 import android.content.Context;
 import android.database.Cursor;
 import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.animation.Interpolator;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TimePicker;
 import android.widget.Toast;
 
 import com.fishing.namtran.fishingmanagerservice.ChangeFishingActivity;
@@ -89,21 +92,17 @@ public class OriginalTableFixHeader {
                     Date currentDate = new Date();
                     Cursor fishingEntries = (new FishingManager(context)).getFishingEntries(sqlDateFormat.format(currentDate));
 
-                    while (fishingEntries.moveToNext())
-                    {
-                        if((fishingEntries.getPosition() + 1) == Integer.valueOf(item.data[0])) {
-                            fishingId =  fishingEntries.getInt(fishingEntries.getColumnIndexOrThrow(Fishings.Properties._ID));
+                    while (fishingEntries.moveToNext()) {
+                        if ((fishingEntries.getPosition() + 1) == Integer.valueOf(item.data[0])) {
+                            fishingId = fishingEntries.getInt(fishingEntries.getColumnIndexOrThrow(Fishings.Properties._ID));
                             break;
                         }
                     }
                     fishingEntries.close();
 
-                    if(item.data[3] == "")
-                    {
+                    if (item.data[4] == "") {
                         Utils.Redirect(context, UpdateCustomerActivity.class, "fishingId", String.valueOf(fishingId));
-                    }
-                    else
-                    {
+                    } else {
                         callLoginDialog(ChangeFishingActivity.class, String.valueOf(fishingId));
                     }
                 }
@@ -113,6 +112,9 @@ public class OriginalTableFixHeader {
         TableFixHeaderAdapter.LongClickListener<Nexus, OriginalCellViewGroup> longClickListenerBody = new TableFixHeaderAdapter.LongClickListener<Nexus, OriginalCellViewGroup >() {
             @Override
             public void onLongClickItem(Nexus item, OriginalCellViewGroup viewGroup, int row, int column) {
+                if(column == 2 && item.data[column + 2] == "") {
+                    GetTimePicker(viewGroup, adapter, item);
+                }
             }
         };
 
@@ -126,7 +128,6 @@ public class OriginalTableFixHeader {
         TableFixHeaderAdapter.BodyBinder<Nexus> bodyBinder = new TableFixHeaderAdapter.BodyBinder<Nexus>() {
             @Override
             public void bindBody(Nexus item, int row, int column) {
-                Utils.Alert(context, item.data[1]);
             }
         };
 
@@ -135,7 +136,43 @@ public class OriginalTableFixHeader {
         adapter.setClickListenerFirstBody(clickListenerBody);
         adapter.setClickListenerBody(clickListenerBody);
         //adapter.setClickListenerSection(clickListenerSection);
-        //adapter.setLongClickListenerBody(longClickListenerBody);
+        adapter.setLongClickListenerBody(longClickListenerBody);
+    }
+
+    private void GetTimePicker(final OriginalCellViewGroup viewGroup, final OriginalTableFixHeaderAdapter adapter, final Nexus item)
+    {
+        // Get Current Time
+        final Calendar c = Calendar.getInstance();
+        int mHour = c.get(Calendar.HOUR_OF_DAY);
+        int mMinute = c.get(Calendar.MINUTE);
+
+        // Launch Time Picker Dialog
+        TimePickerDialog timePickerDialog = new TimePickerDialog(context,
+                new TimePickerDialog.OnTimeSetListener() {
+
+                    @Override
+                    public void onTimeSet(TimePicker view, int hourOfDay,
+                                          int minute) {
+                        String dateOut1 = String.format("%02d:%02d", hourOfDay, minute);
+                        viewGroup.textView.setText(dateOut1);
+
+                        int fishingId = 0;
+                        DateFormat sqlDateFormat = new SimpleDateFormat("yyyy/MM/dd");
+                        Date currentDate = new Date();
+                        Cursor fishingEntries = (new FishingManager(context)).getFishingEntries(sqlDateFormat.format(currentDate));
+
+                        while (fishingEntries.moveToNext()) {
+                            if ((fishingEntries.getPosition() + 1) == Integer.valueOf(item.data[0])) {
+                                fishingId = fishingEntries.getInt(fishingEntries.getColumnIndexOrThrow(Fishings.Properties._ID));
+                                break;
+                            }
+                        }
+                        fishingEntries.close();
+                        (new FishingManager(context)).updateDateOut1(String.valueOf(fishingId), (new SimpleDateFormat("yyyy/MM/dd").format(currentDate) + " " + dateOut1 + ":00"));
+                        adapter.setBody(getBody());
+                    }
+                }, mHour, mMinute, true);
+        timePickerDialog.show();
     }
 
     private void callLoginDialog(final Class<?> _class, final String fishingId)
@@ -170,6 +207,7 @@ public class OriginalTableFixHeader {
         final String headers[] = {
                 context.getString(R.string.fullname),
                 context.getString(R.string.date_in),
+                context.getString(R.string.date_out_1),
                 context.getString(R.string.date_out),
                 context.getString(R.string.total_hours),
                 context.getString(R.string.total_fish),
@@ -201,7 +239,8 @@ public class OriginalTableFixHeader {
         while (fishings.moveToNext()) {
             String dateIn = fishings.getString(fishings.getColumnIndexOrThrow(Fishings.Properties.DATE_IN));
             String dateOut = fishings.getString(fishings.getColumnIndexOrThrow(Fishings.Properties.DATE_OUT));
-            String dateInView = "", dateOutView = "", totalHoursView = "";
+            String dateOut1 = fishings.getString(fishings.getColumnIndexOrThrow(Fishings.Properties.DATE_OUT_1));
+            String dateInView = "", dateOutView = "", dateOutView1 = "", totalHoursView = "";
 
             try {
                 Calendar cal = Calendar.getInstance();
@@ -221,6 +260,9 @@ public class OriginalTableFixHeader {
                 }
                 else onlineCount++;
 
+                cal.setTime(dateFormat.parse(dateOut1));
+                dateOutView1 = String.format("%02d:%02d", cal.get(Calendar.HOUR_OF_DAY), cal.get(Calendar.MINUTE));
+
             } catch (ParseException e) {
                 e.printStackTrace();
             }
@@ -231,6 +273,7 @@ public class OriginalTableFixHeader {
                     order + "",
                     fishings.getString(fishings.getColumnIndexOrThrow(Fishings.Properties.FULLNAME)),
                     dateInView,
+                    dateOutView1,
                     dateOutView,
                     totalHoursView,
                     fishings.getString(fishings.getColumnIndexOrThrow(Fishings.Properties.TOTAL_FISH)),
@@ -239,7 +282,7 @@ public class OriginalTableFixHeader {
                     fishings.getString(fishings.getColumnIndexOrThrow(Fishings.Properties.NOTE))));
             order++;
         }
-        items.add(new Nexus(context.getString(R.string.total_all) + ": " + onlineCount + "/" + totalFisher, "", "", "", "", "", "", totalMoney + "", ""));
+        items.add(new Nexus(context.getString(R.string.total_all) + ": " + onlineCount + "/" + totalFisher, "", "", "", "", "", "", "", totalMoney + "", ""));
         totalItems = items.size() - 1;
         fishings.close();
         return items;

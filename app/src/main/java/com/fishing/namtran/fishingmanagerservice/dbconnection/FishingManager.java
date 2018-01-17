@@ -44,7 +44,7 @@ public class FishingManager {
         return fishingId;
     }
 
-    public boolean updateCloseFishingEntry(String mFishingId, String mDateOut, String mBuyFish, String mTotalFish, String mTotalMoney, String mNote) {
+    public boolean updateCloseFishingEntry(String mFishingId, String mDateOut, String mDateOut1, String mBuyFish, String mTotalFish, String mTotalMoney, String mNote) {
 
         InitializeDatabase mDbHelper = new InitializeDatabase(context);
         db = mDbHelper.getWritableDatabase();
@@ -52,6 +52,7 @@ public class FishingManager {
         // Create a new map of values, where column names are the keys
         ContentValues values = new ContentValues();
         values.put(Fishings.Properties.DATE_OUT, mDateOut);
+        values.put(Fishings.Properties.DATE_OUT_1, mDateOut1);
         values.put(Fishings.Properties.BUY_FISH, mBuyFish);
         values.put(Fishings.Properties.TOTAL_FISH, mTotalFish);
         values.put(Fishings.Properties.TOTAL_MONEY, mTotalMoney);
@@ -73,7 +74,7 @@ public class FishingManager {
         return true;
     }
 
-    public boolean changeCloseFishingEntry(String mFishingId, String fullname, String mDateIn, String mDateOut, String mBuyFish, String mTotalFish, String mTotalMoney, String mNote) {
+    public boolean changeCloseFishingEntry(String mFishingId, String fullname, String mDateIn, String mDateOut, String mDateOut1, String mBuyFish, String mTotalFish, String mTotalMoney, String mNote) {
 
         InitializeDatabase mDbHelper = new InitializeDatabase(context);
         db = mDbHelper.getWritableDatabase();
@@ -83,10 +84,36 @@ public class FishingManager {
         values.put(Fishings.Properties.FULLNAME, fullname);
         values.put(Fishings.Properties.DATE_IN, mDateIn);
         values.put(Fishings.Properties.DATE_OUT, mDateOut);
+        values.put(Fishings.Properties.DATE_OUT_1, mDateOut1);
         values.put(Fishings.Properties.BUY_FISH, mBuyFish);
         values.put(Fishings.Properties.TOTAL_FISH, mTotalFish);
         values.put(Fishings.Properties.TOTAL_MONEY, mTotalMoney);
         values.put(Fishings.Properties.NOTE, mNote);
+
+        // Which row to update, based on the title
+        String selection = Fishings.Properties._ID + " = ?";
+        String[] selectionArgs = { mFishingId };
+
+        //Update fishings
+        db.update(
+                Fishings.Properties.TABLE_NAME,
+                values,
+                selection,
+                selectionArgs);
+
+        //close connection
+        db.close();
+        return true;
+    }
+
+    public boolean updateDateOut1(String mFishingId, String mDateOut) {
+
+        InitializeDatabase mDbHelper = new InitializeDatabase(context);
+        db = mDbHelper.getWritableDatabase();
+
+        // Create a new map of values, where column names are the keys
+        ContentValues values = new ContentValues();
+        values.put(Fishings.Properties.DATE_OUT_1, mDateOut);
 
         // Which row to update, based on the title
         String selection = Fishings.Properties._ID + " = ?";
@@ -166,7 +193,7 @@ public class FishingManager {
         InitializeDatabase mDbHelper = new InitializeDatabase(context);
         db = mDbHelper.getReadableDatabase();
 
-        String query = "SELECT fishing." + Fishings.Properties.DATE_IN + ", fishing." + Fishings.Properties.DATE_OUT  + ", fishing." + Fishings.Properties.BUY_FISH + ", fishing." + Fishings.Properties.TOTAL_FISH + ", fishing." + Fishings.Properties.NOTE
+        String query = "SELECT fishing." + Fishings.Properties.DATE_IN + ", fishing." + Fishings.Properties.DATE_OUT + ", fishing." + Fishings.Properties.DATE_OUT_1 + ", fishing." + Fishings.Properties.BUY_FISH + ", fishing." + Fishings.Properties.TOTAL_FISH + ", fishing." + Fishings.Properties.NOTE
                                 + ", fishing." + Fishings.Properties._ID + ", fishing." + Fishings.Properties.TOTAL_MONEY + ", fishing." + Fishings.Properties.FULLNAME +
                         " FROM " +  Fishings.Properties.TABLE_NAME + " fishing" +
                         " WHERE fishing." + Fishings.Properties.DATE_IN + " LIKE '" + currentDate + "%'" ;
@@ -178,7 +205,7 @@ public class FishingManager {
         InitializeDatabase mDbHelper = new InitializeDatabase(context);
         db = mDbHelper.getReadableDatabase();
 
-        String query = "SELECT fishing." + Fishings.Properties.DATE_IN + ", fishing." + Fishings.Properties.DATE_OUT + ", fishing." + Fishings.Properties.BUY_FISH + ", fishing." + Fishings.Properties.TOTAL_FISH + ", fishing." + Fishings.Properties.NOTE +
+        String query = "SELECT fishing." + Fishings.Properties.DATE_IN + ", fishing." + Fishings.Properties.DATE_OUT + ", fishing." + Fishings.Properties.DATE_OUT_1 + ", fishing." + Fishings.Properties.BUY_FISH + ", fishing." + Fishings.Properties.TOTAL_FISH + ", fishing." + Fishings.Properties.NOTE +
                 ", fishing." + Fishings.Properties.FULLNAME + ", fishing." + Fishings.Properties.TOTAL_MONEY +
                 " FROM " +  Fishings.Properties.TABLE_NAME + " fishing" +
                 " WHERE fishing." + Fishings.Properties._ID + " = " + fishingId;

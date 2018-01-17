@@ -322,7 +322,7 @@ public class UpdateCustomerActivity extends AppCompatActivity {
                 finish();
                 FishingManager fishingManager = new FishingManager(getApplicationContext());
 
-                if(fishingManager.updateCloseFishingEntry(mFishingId, fullDateOut, mBuyFish.equals("") ? "0" : mBuyFish, mTotalFish.equals("") ? "0" : mTotalFish, mTotalMoney, mNote)) {
+                if(fishingManager.updateCloseFishingEntry(mFishingId, fullDateOut, fullDateOut, mBuyFish.equals("") ? "0" : mBuyFish, mTotalFish.equals("") ? "0" : mTotalFish, mTotalMoney, mNote)) {
                     Utils.Redirect(getApplicationContext(), ManagerCustomerActivity.class);
                 }
                 else {

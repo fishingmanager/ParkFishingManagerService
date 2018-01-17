@@ -41,6 +41,8 @@
         <activity
             android:name=".ReportActivity"
             android:label="@string/report" />
+        <service
+            android:name=".SendMailService"/>
     </application>
 
 </manifest>

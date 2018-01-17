@@ -250,7 +250,7 @@ public class ChangeFishingActivity extends AppCompatActivity {
                 finish();
                 FishingManager fishingManager = new FishingManager(getApplicationContext());
 
-                if(fishingManager.changeCloseFishingEntry(mFishingId, mFullName, fullDateIn, fullDateOut, mBuyFish, mTotalFish, mTotalMoney, mNote)) {
+                if(fishingManager.changeCloseFishingEntry(mFishingId, mFullName, fullDateIn, fullDateOut, fullDateOut, mBuyFish, mTotalFish, mTotalMoney, mNote)) {
                     Utils.Redirect(getApplicationContext(), ManagerCustomerActivity.class);
                 }
                 else {

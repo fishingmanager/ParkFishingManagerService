@@ -91,6 +91,7 @@ public class InitializeDatabase extends SQLiteOpenHelper {
     public InitializeDatabase(Context context) {
         super(context, DbConfig.DATABASE_NAME, null, DbConfig.DATABASE_VERSION);
     }
+
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(SQL_CREATE_SETTINGS_TABLE);
         db.execSQL(SQL_CREATE_USERS_TABLE);
@@ -101,14 +102,26 @@ public class InitializeDatabase extends SQLiteOpenHelper {
         db.execSQL(SQL_CREATE_SETTINGS_RECORDS);
         db.execSQL(SQL_CREATE_FISHINGS_RECORDS);
     }
+
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         // This database is only a cache for online data, so its upgrade policy is
         // to simply to discard the data and start over
+
         db.execSQL(SQL_DELETE_USERS_TABLE);
         db.execSQL(SQL_DELETE_SETTINGS_TABLE);
         db.execSQL(SQL_DELETE_FISHINGS_TABLE);
         onCreate(db);
+
+        switch(oldVersion)
+        {
+            case 2: // Add DateOut1 in v2
+                String DATABASE_ALTER_FISHINGS_TO_V2 = "ALTER TABLE "
+                        + Fishings.Properties.TABLE_NAME + " ADD COLUMN " + Fishings.Properties.DATE_OUT_1 + " DATETIME;";
+                db.execSQL(DATABASE_ALTER_FISHINGS_TO_V2);
+                break;
+        }
     }
+
     public void onDowngrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         onUpgrade(db, oldVersion, newVersion);
     }

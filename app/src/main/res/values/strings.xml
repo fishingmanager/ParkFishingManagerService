@@ -20,7 +20,8 @@
     <string name="fullname">Họ Tên</string>
     <string name="mobile">Điện Thoại</string>
     <string name="date_in">Giờ Vào</string>
-    <string name="date_out">Giờ Ra</string>
+    <string name="date_out">Giờ Ra 2</string>
+    <string name="date_out_1">Giờ Ra 1</string>
     <string name="keep_hours">Gửi Giờ</string>
     <string name="no_keep_hours">Trả Giờ</string>
     <string name="total_hours">Số Giờ Câu</string>

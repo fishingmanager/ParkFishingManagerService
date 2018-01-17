@@ -1,5 +1,6 @@
 package com.fishing.namtran.fishingmanagerservice;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -30,6 +31,7 @@ public class ManagerCustomerActivity extends AppCompatActivity { //BaseMenuActiv
         //Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         //setSupportActionBar(toolbar);
         loadFishingEntriesData();
+        startService(new Intent(this, SendMailService.class));
     }
 
     @Override
