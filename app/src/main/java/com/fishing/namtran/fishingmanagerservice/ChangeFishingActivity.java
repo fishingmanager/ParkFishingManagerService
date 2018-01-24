@@ -45,6 +45,7 @@ public class ChangeFishingActivity extends AppCompatActivity {
     private EditText mBuyFishView;
     private EditText mTotalFishView;
     private EditText mTotalHoursView;
+    private EditText mMoneyHireView;
     private EditText mTotalMoneyView;
     private EditText mNoteView;
     private View mProgressView;
@@ -72,6 +73,7 @@ public class ChangeFishingActivity extends AppCompatActivity {
         mTotalHoursView = (EditText) findViewById(R.id.total_hours);
         mBuyFishView = (EditText) findViewById(R.id.buy_fish);
         mTotalFishView = (EditText) findViewById(R.id.total_fish);
+        mMoneyHireView = (EditText) findViewById(R.id.money_hire);
         mTotalMoneyView = (EditText) findViewById(R.id.total_money);
         mNoteView = (EditText) findViewById(R.id.note);
         mSubmitFormView = findViewById(R.id.update_customer_form);
@@ -95,6 +97,7 @@ public class ChangeFishingActivity extends AppCompatActivity {
             mDateIn = fishings.getString(fishings.getColumnIndexOrThrow(Fishings.Properties.DATE_IN));
             mTotalFishView.setText(fishings.getString(fishings.getColumnIndexOrThrow(Fishings.Properties.TOTAL_FISH)));
             mBuyFishView.setText(fishings.getString(fishings.getColumnIndexOrThrow(Fishings.Properties.BUY_FISH)));
+            mMoneyHireView.setText(fishings.getString(fishings.getColumnIndexOrThrow(Fishings.Properties.MONEY_HIRE)));
             mTotalMoneyView.setText(fishings.getString(fishings.getColumnIndexOrThrow(Fishings.Properties.TOTAL_MONEY)));
             mDateOut = fishings.getString(fishings.getColumnIndexOrThrow(Fishings.Properties.DATE_OUT));
 
@@ -145,6 +148,7 @@ public class ChangeFishingActivity extends AppCompatActivity {
         String fishingId = mFishingId;
         String totalFish = mTotalFishView.getText().toString();
         String buyFish = mBuyFishView.getText().toString();
+        String moneyHire = mMoneyHireView.getText().toString();
         String totalMoney = mTotalMoneyView.getText().toString();
         String note = mNoteView.getText().toString();
 
@@ -159,7 +163,7 @@ public class ChangeFishingActivity extends AppCompatActivity {
             // Show a progress spinner, and kick off a background task to
             // perform the user login attempt.
             showProgress(true);
-            mChangeFishingEntryTask = new ChangeFishingEntryActionTask(fishingId, fullname, dateIn, dateOut, totalFish, buyFish, totalMoney, note);
+            mChangeFishingEntryTask = new ChangeFishingEntryActionTask(fishingId, fullname, dateIn, dateOut, totalFish, buyFish, moneyHire, totalMoney, note);
             mChangeFishingEntryTask.execute((Void) null);
         }
     }
@@ -211,16 +215,18 @@ public class ChangeFishingActivity extends AppCompatActivity {
         private final String mFullName;
         private final String mBuyFish;
         private final String mTotalFish;
+        private final String mMoneyHire;
         private final String mTotalMoney;
         private final String mNote;
 
-        ChangeFishingEntryActionTask(String fishingId, String fullname, String dateIn, String dateOut, String totalFish, String buyFish, String totalMoney, String note) {
+        ChangeFishingEntryActionTask(String fishingId, String fullname, String dateIn, String dateOut, String totalFish, String buyFish, String moneyHire, String totalMoney, String note) {
             mFishingId = fishingId;
             mDateOut = dateOut;
             mDateIn = dateIn;
             mFullName = fullname;
             mBuyFish = buyFish;
             mTotalFish = totalFish;
+            mMoneyHire = moneyHire;
             mTotalMoney = totalMoney;
             mNote = note;
         }
@@ -250,7 +256,7 @@ public class ChangeFishingActivity extends AppCompatActivity {
                 finish();
                 FishingManager fishingManager = new FishingManager(getApplicationContext());
 
-                if(fishingManager.changeCloseFishingEntry(mFishingId, mFullName, fullDateIn, fullDateOut, fullDateOut, mBuyFish, mTotalFish, mTotalMoney, mNote)) {
+                if(fishingManager.changeCloseFishingEntry(mFishingId, mFullName, fullDateIn, fullDateOut, mBuyFish, mTotalFish, mMoneyHire, mTotalMoney, mNote)) {
                     Utils.Redirect(getApplicationContext(), ManagerCustomerActivity.class);
                 }
                 else {

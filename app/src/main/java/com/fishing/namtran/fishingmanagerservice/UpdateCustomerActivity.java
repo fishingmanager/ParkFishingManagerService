@@ -50,17 +50,16 @@ public class UpdateCustomerActivity extends AppCompatActivity {
     private EditText mBuyFishView;
     private EditText mTotalFishView;
     private EditText mTotalHoursView;
+    private EditText mMoneyHireView;
     private EditText mTotalMoneyView;
     private EditText mNoteView;
     private View mProgressView;
     private View mSubmitFormView;
     private String mFishingId;
     private String mDateIn;
-    private double mBuyFish;
-    private long mFeePackage;
     private int mPriceBuyFish;
     private int mPriceFishing;
-    private double mTotalFish;
+    private double mTotalMoney;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,6 +75,7 @@ public class UpdateCustomerActivity extends AppCompatActivity {
         mTotalHoursView = (EditText) findViewById(R.id.total_hours);
         mBuyFishView = (EditText) findViewById(R.id.buy_fish);
         mTotalFishView = (EditText) findViewById(R.id.total_fish);
+        mMoneyHireView = (EditText) findViewById(R.id.money_hire);
         mTotalMoneyView = (EditText) findViewById(R.id.total_money);
         mNoteView = (EditText) findViewById(R.id.note);
         mSubmitFormView = findViewById(R.id.update_customer_form);
@@ -108,7 +108,6 @@ public class UpdateCustomerActivity extends AppCompatActivity {
             }
 
             mDatInView.setText(String.format("%02d:%02d", cal.get(Calendar.HOUR_OF_DAY), cal.get(Calendar.MINUTE)));
-            mBuyFish = fishings.getDouble(fishings.getColumnIndexOrThrow(Fishings.Properties.BUY_FISH));
             mNoteView.setText(fishings.getString(fishings.getColumnIndexOrThrow(Fishings.Properties.NOTE)));
         }
         fishings.close();
@@ -138,14 +137,57 @@ public class UpdateCustomerActivity extends AppCompatActivity {
             @Override
             public void afterTextChanged(Editable s) {
                 String totalFishText = mTotalFishView.getText().toString();
+                String moneyHireText = mMoneyHireView.getText().toString();
                 double totalFish = 0;
+                double moneyHire = 0;
+
+                if(!moneyHireText.equals(""))
+                {
+                    moneyHire = Double.parseDouble(moneyHireText);
+                }
 
                 if(!totalFishText.equals("") && totalFishText.charAt(0) != '.')
                 {
                     totalFish = Double.parseDouble(totalFishText);
                 }
                 mBuyFishView.setText(BigDecimal.valueOf(mPriceBuyFish).multiply(BigDecimal.valueOf(totalFish))+ "");
-                mTotalMoneyView.setText((BigDecimal.valueOf(mFeePackage).subtract(BigDecimal.valueOf(mPriceBuyFish).multiply(BigDecimal.valueOf(totalFish)))) + "");
+                mTotalMoneyView.setText((BigDecimal.valueOf(mTotalMoney)
+                                        .subtract(BigDecimal.valueOf(mPriceBuyFish).multiply(BigDecimal.valueOf(totalFish)))
+                                        .add(BigDecimal.valueOf(moneyHire))).toString());
+            }
+        });
+
+        mMoneyHireView.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                String moneyHireText = mMoneyHireView.getText().toString();
+                String totalFishText = mTotalFishView.getText().toString();
+                double moneyHire = 0;
+                double totalFish = 0;
+
+                if(!moneyHireText.equals(""))
+                {
+                    moneyHire = Double.parseDouble(moneyHireText);
+                }
+
+                if(!totalFishText.equals(""))
+                {
+                    totalFish = Double.parseDouble(totalFishText);
+                }
+
+                mTotalMoneyView.setText(BigDecimal.valueOf(mTotalMoney)
+                                        .add(BigDecimal.valueOf(moneyHire)
+                                        .subtract(BigDecimal.valueOf(mPriceBuyFish).multiply(BigDecimal.valueOf(totalFish)))).toString());
             }
         });
     }
@@ -183,7 +225,7 @@ public class UpdateCustomerActivity extends AppCompatActivity {
                     {
                         totalFee = point3Hours;
                     }
-                    mFeePackage = totalFee;
+                    mTotalMoney = totalFee;
                     mTotalMoneyView.setText(String.valueOf(totalFee));
                 }
             }
@@ -211,6 +253,7 @@ public class UpdateCustomerActivity extends AppCompatActivity {
         String fishingId = mFishingId;
         String totalFish = mTotalFishView.getText().toString();
         String buyFish = mBuyFishView.getText().toString();
+        String moneyHire = mMoneyHireView.getText().toString();
         String totalMoney = mTotalMoneyView.getText().toString();
         String note = mNoteView.getText().toString();
 
@@ -231,7 +274,7 @@ public class UpdateCustomerActivity extends AppCompatActivity {
             // Show a progress spinner, and kick off a background task to
             // perform the user login attempt.
             showProgress(true);
-            mCustomerTask = new CustomerActionTask(fishingId, dateOut, totalFish, buyFish, totalMoney, note);
+            mCustomerTask = new CustomerActionTask(fishingId, dateOut, totalFish, buyFish, moneyHire, totalMoney, note);
             mCustomerTask.execute((Void) null);
         }
     }
@@ -286,14 +329,16 @@ public class UpdateCustomerActivity extends AppCompatActivity {
         private final String mDateOut;
         private final String mBuyFish;
         private final String mTotalFish;
+        private final String mMoneyHire;
         private final String mTotalMoney;
         private final String mNote;
 
-        CustomerActionTask(String fishingId, String dateOut, String totalFish, String buyFish, String totalMoney, String note) {
+        CustomerActionTask(String fishingId, String dateOut, String totalFish, String buyFish, String moneyHire, String totalMoney, String note) {
             mFishingId = fishingId;
             mDateOut = dateOut;
             mBuyFish = buyFish;
             mTotalFish = totalFish;
+            mMoneyHire = moneyHire;
             mTotalMoney = totalMoney;
             mNote = note;
         }
@@ -322,7 +367,7 @@ public class UpdateCustomerActivity extends AppCompatActivity {
                 finish();
                 FishingManager fishingManager = new FishingManager(getApplicationContext());
 
-                if(fishingManager.updateCloseFishingEntry(mFishingId, fullDateOut, fullDateOut, mBuyFish.equals("") ? "0" : mBuyFish, mTotalFish.equals("") ? "0" : mTotalFish, mTotalMoney, mNote)) {
+                if(fishingManager.updateCloseFishingEntry(mFishingId, fullDateOut, mBuyFish.equals("") ? "0" : mBuyFish, mTotalFish.equals("") ? "0" : mTotalFish, mMoneyHire, mTotalMoney, mNote)) {
                     Utils.Redirect(getApplicationContext(), ManagerCustomerActivity.class);
                 }
                 else {

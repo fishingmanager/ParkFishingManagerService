@@ -112,7 +112,7 @@ public class OriginalTableFixHeader {
         TableFixHeaderAdapter.LongClickListener<Nexus, OriginalCellViewGroup> longClickListenerBody = new TableFixHeaderAdapter.LongClickListener<Nexus, OriginalCellViewGroup >() {
             @Override
             public void onLongClickItem(Nexus item, OriginalCellViewGroup viewGroup, int row, int column) {
-                if(column == 2 && item.data[column + 2] == "") {
+                if(column == 2 && item.data[column + 2] == "" && row != adapter.getRowCount()-1) {
                     GetTimePicker(viewGroup, adapter, item);
                 }
             }
@@ -212,6 +212,7 @@ public class OriginalTableFixHeader {
                 context.getString(R.string.total_hours),
                 context.getString(R.string.total_fish),
                 context.getString(R.string.buy_fish),
+                context.getString(R.string.money_hire),
                 context.getString(R.string.total_money),
                 context.getString(R.string.note)
         };
@@ -260,8 +261,10 @@ public class OriginalTableFixHeader {
                 }
                 else onlineCount++;
 
-                cal.setTime(dateFormat.parse(dateOut1));
-                dateOutView1 = String.format("%02d:%02d", cal.get(Calendar.HOUR_OF_DAY), cal.get(Calendar.MINUTE));
+                if(dateOut1 != null) {
+                    cal.setTime(dateFormat.parse(dateOut1));
+                    dateOutView1 = String.format("%02d:%02d", cal.get(Calendar.HOUR_OF_DAY), cal.get(Calendar.MINUTE));
+                }
 
             } catch (ParseException e) {
                 e.printStackTrace();
@@ -278,11 +281,12 @@ public class OriginalTableFixHeader {
                     totalHoursView,
                     fishings.getString(fishings.getColumnIndexOrThrow(Fishings.Properties.TOTAL_FISH)),
                     fishings.getString(fishings.getColumnIndexOrThrow(Fishings.Properties.BUY_FISH)),
+                    fishings.getString(fishings.getColumnIndexOrThrow(Fishings.Properties.MONEY_HIRE)),
                     fishings.getString(fishings.getColumnIndexOrThrow(Fishings.Properties.TOTAL_MONEY)),
                     fishings.getString(fishings.getColumnIndexOrThrow(Fishings.Properties.NOTE))));
             order++;
         }
-        items.add(new Nexus(context.getString(R.string.total_all) + ": " + onlineCount + "/" + totalFisher, "", "", "", "", "", "", "", totalMoney + "", ""));
+        items.add(new Nexus(context.getString(R.string.total_all) + ": " + onlineCount + "/" + totalFisher, "", "", "", "", "", "", "", "", totalMoney + "", ""));
         totalItems = items.size() - 1;
         fishings.close();
         return items;

@@ -16,6 +16,7 @@ public final class Fishings {
         public static final String DATE_IN = "dateIn";
         public static final String DATE_OUT = "dateOut";
         public static final String DATE_OUT_1 = "dateOut1"; //Just want to see the datetime
+        public static final String MONEY_HIRE = "money_hire";
         public static final String TOTAL_FISH = "total_fish";
         public static final String BUY_FISH = "buy_fish";
         public static final String NOTE = "note";

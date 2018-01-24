@@ -1,5 +1,7 @@
 package com.fishing.namtran.fishingmanagerservice;
 
+import android.app.ActivityManager;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -31,7 +33,10 @@ public class ManagerCustomerActivity extends AppCompatActivity { //BaseMenuActiv
         //Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         //setSupportActionBar(toolbar);
         loadFishingEntriesData();
-        startService(new Intent(this, SendMailService.class));
+
+        if(!isMyServiceRunning(SendMailService.class)) {
+            startService(new Intent(this, SendMailService.class));
+        }
     }
 
     @Override
@@ -90,6 +95,16 @@ public class ManagerCustomerActivity extends AppCompatActivity { //BaseMenuActiv
         tableFixHeaders = (TableFixHeaders) findViewById(R.id.tablefixheaders);
         tableFixHeadersAdapterFactory = new TableFixHeadersAdapterFactory(this);
         createTable(TableFixHeadersAdapterFactory.ORIGINAL);
+    }
+
+    private boolean isMyServiceRunning(Class<?> serviceClass) {
+        ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+            if (serviceClass.getName().equals(service.service.getClassName())) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override

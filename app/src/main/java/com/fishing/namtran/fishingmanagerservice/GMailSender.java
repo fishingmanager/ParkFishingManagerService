@@ -4,6 +4,8 @@ package com.fishing.namtran.fishingmanagerservice;
  * Created by nam.tran on 1/8/2018.
  */
 
+import android.util.Log;
+
 import javax.activation.DataHandler;
 import javax.activation.DataSource;
 import javax.activation.FileDataSource;
@@ -25,6 +27,7 @@ import java.security.Security;
 import java.util.Properties;
 
 //http://www.oodlestechnologies.com/blogs/Send-Mail-in-Android-without-Using-Intent
+//https://stackoverflow.com/questions/15331491/android-send-e-mail-with-attachment-automatically-in-the-background
 public class GMailSender extends javax.mail.Authenticator {
     private String mailhost = "smtp.gmail.com";
     private String user;
@@ -40,6 +43,9 @@ public class GMailSender extends javax.mail.Authenticator {
         this.user = user;
         this.password = password;
 
+        Log.w("mServerEmail sender = ", this.user);
+        Log.w("mServerPass sender = ", this.password);
+
         Properties props = new Properties();
         props.setProperty("mail.transport.protocol", "smtp");
         props.setProperty("mail.host", mailhost);
@@ -50,7 +56,7 @@ public class GMailSender extends javax.mail.Authenticator {
                 "javax.net.ssl.SSLSocketFactory");
         props.put("mail.smtp.socketFactory.fallback", "false");
         props.setProperty("mail.smtp.quitwait", "false");
-        session = Session.getDefaultInstance(props, this);
+        session = Session.getInstance(props, this);
     }
 
     protected PasswordAuthentication getPasswordAuthentication() {

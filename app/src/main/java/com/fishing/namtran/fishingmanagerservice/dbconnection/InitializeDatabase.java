@@ -2,13 +2,18 @@ package com.fishing.namtran.fishingmanagerservice.dbconnection;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
+
+import java.io.File;
 
 /**
  * Created by nam.tran on 10/18/2017.
  */
 
 public class InitializeDatabase extends SQLiteOpenHelper {
+
+    private static final String DB_FULL_PATH = "/data/data/com.fishing.namtran.fishingmanagerservice/databases/" + DbConfig.DATABASE_NAME;
 
     private static final String SQL_CREATE_SETTINGS_TABLE =
             "CREATE TABLE IF NOT EXISTS " + Settings.Properties.TABLE_NAME + " (" +
@@ -34,6 +39,20 @@ public class InitializeDatabase extends SQLiteOpenHelper {
                     Fishings.Properties.FULLNAME + " TEXT," +
                     Fishings.Properties.DATE_IN + " DATETIME," +
                     Fishings.Properties.DATE_OUT + " DATETIME," +
+                    Fishings.Properties.BUY_FISH + " REAL DEFAULT 0," +
+                    Fishings.Properties.TOTAL_FISH + " INTEGER DEFAULT 0," +
+                    Fishings.Properties.TOTAL_MONEY + " REAL DEFAULT 0.0," +
+                    Fishings.Properties.NOTE + " TEXT); ";
+
+    private static final String SQL_CREATE_FISHINGS_TABLE_V2 =
+            "CREATE TABLE IF NOT EXISTS " + Fishings.Properties.TABLE_NAME + " (" +
+                    Fishings.Properties._ID + " INTEGER PRIMARY KEY," +
+                    Fishings.Properties.USER_ID + " INTEGER DEFAULT 1," +
+                    Fishings.Properties.FULLNAME + " TEXT," +
+                    Fishings.Properties.DATE_IN + " DATETIME," +
+                    Fishings.Properties.DATE_OUT + " DATETIME," +
+                    Fishings.Properties.DATE_OUT_1 + " DATETIME," +
+                    Fishings.Properties.MONEY_HIRE + " REAL DEFAULT 0," +
                     Fishings.Properties.BUY_FISH + " REAL DEFAULT 0," +
                     Fishings.Properties.TOTAL_FISH + " INTEGER DEFAULT 0," +
                     Fishings.Properties.TOTAL_MONEY + " REAL DEFAULT 0.0," +
@@ -95,7 +114,7 @@ public class InitializeDatabase extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(SQL_CREATE_SETTINGS_TABLE);
         db.execSQL(SQL_CREATE_USERS_TABLE);
-        db.execSQL(SQL_CREATE_FISHINGS_TABLE);
+        db.execSQL(SQL_CREATE_FISHINGS_TABLE_V2);
 
         db.execSQL(SQL_CREATE_USERS_RECORDS_1);
         db.execSQL(SQL_CREATE_USERS_RECORDS_2);
@@ -107,22 +126,63 @@ public class InitializeDatabase extends SQLiteOpenHelper {
         // This database is only a cache for online data, so its upgrade policy is
         // to simply to discard the data and start over
 
-        db.execSQL(SQL_DELETE_USERS_TABLE);
-        db.execSQL(SQL_DELETE_SETTINGS_TABLE);
-        db.execSQL(SQL_DELETE_FISHINGS_TABLE);
-        onCreate(db);
+        //db.execSQL(SQL_DELETE_USERS_TABLE);
+        ///db.execSQL(SQL_DELETE_SETTINGS_TABLE);
+        //db.execSQL(SQL_DELETE_FISHINGS_TABLE);
+        //onCreate(db);
 
-        switch(oldVersion)
+        //onCreate(db);
+
+        if(checkDataBase())
         {
-            case 2: // Add DateOut1 in v2
-                String DATABASE_ALTER_FISHINGS_TO_V2 = "ALTER TABLE "
-                        + Fishings.Properties.TABLE_NAME + " ADD COLUMN " + Fishings.Properties.DATE_OUT_1 + " DATETIME;";
-                db.execSQL(DATABASE_ALTER_FISHINGS_TO_V2);
-                break;
+            /*switch (newVersion)
+            {
+                case 2:
+                    createPatchVersion2(db);
+                    break;
+            }*/
+            createPatchVersion2(db);
+        }
+        else
+        {
+            db.execSQL(SQL_DELETE_USERS_TABLE);
+            db.execSQL(SQL_DELETE_SETTINGS_TABLE);
+            db.execSQL(SQL_DELETE_FISHINGS_TABLE);
+
+            db.execSQL(SQL_CREATE_SETTINGS_TABLE);
+            db.execSQL(SQL_CREATE_USERS_TABLE);
+            db.execSQL(SQL_CREATE_FISHINGS_TABLE_V2);
+
+            db.execSQL(SQL_CREATE_USERS_RECORDS_1);
+            db.execSQL(SQL_CREATE_USERS_RECORDS_2);
+            db.execSQL(SQL_CREATE_SETTINGS_RECORDS);
         }
     }
 
     public void onDowngrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         onUpgrade(db, oldVersion, newVersion);
+    }
+
+    private boolean checkDataBase() {
+        SQLiteDatabase checkDB = null;
+        try {
+            checkDB = SQLiteDatabase.openDatabase(DB_FULL_PATH, null,
+                    SQLiteDatabase.OPEN_READONLY);
+            checkDB.close();
+        } catch (SQLiteException e) {
+            // database doesn't exist yet.
+        }
+        return checkDB != null;
+    }
+
+    private void createPatchVersion2(SQLiteDatabase db)
+    {
+        String ADD_MONEY_HIRE_TO_V2 = "ALTER TABLE "
+                + Fishings.Properties.TABLE_NAME + " ADD COLUMN " + Fishings.Properties.MONEY_HIRE + " REAL DEFAULT 0;";
+        db.execSQL(ADD_MONEY_HIRE_TO_V2);
+
+        String ADD_DATE_OUT_1_TO_V2 = "ALTER TABLE "
+                + Fishings.Properties.TABLE_NAME + " ADD COLUMN " + Fishings.Properties.DATE_OUT_1 + " DATETIME;";
+        db.execSQL(ADD_DATE_OUT_1_TO_V2);
     }
 }

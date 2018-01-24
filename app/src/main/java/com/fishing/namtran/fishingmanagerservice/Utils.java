@@ -166,7 +166,7 @@ public class Utils extends FragmentActivity {
         Row row = sheet1.createRow(0);
 
         String[] titles = { context.getString(R.string.fullname), context.getString(R.string.date_in), context.getString(R.string.date_out),
-                context.getString(R.string.total_hours), context.getString(R.string.buy_fish), context.getString(R.string.total_money), context.getString(R.string.note)};
+                context.getString(R.string.total_hours), context.getString(R.string.buy_fish), context.getString(R.string.money_hire), context.getString(R.string.total_money), context.getString(R.string.note)};
 
         for (int j = 0; j < titles.length; j++) {
             c = row.createCell(j);
@@ -176,7 +176,7 @@ public class Utils extends FragmentActivity {
         }
 
         String[] fieldNames = { Fishings.Properties.FULLNAME, Fishings.Properties.DATE_IN, Fishings.Properties.DATE_OUT,
-                "TOTAL_HOURS", Fishings.Properties.BUY_FISH, Fishings.Properties.TOTAL_MONEY, Fishings.Properties.NOTE};
+                "TOTAL_HOURS", Fishings.Properties.BUY_FISH, Fishings.Properties.MONEY_HIRE, Fishings.Properties.TOTAL_MONEY, Fishings.Properties.NOTE};
         while (cursor.moveToNext()) {
             row = sheet1.createRow(cursor.getPosition() + 1);
             for (int i = 0; i < fieldNames.length; i++) {

@@ -44,7 +44,7 @@ public class FishingManager {
         return fishingId;
     }
 
-    public boolean updateCloseFishingEntry(String mFishingId, String mDateOut, String mDateOut1, String mBuyFish, String mTotalFish, String mTotalMoney, String mNote) {
+    public boolean updateCloseFishingEntry(String mFishingId, String mDateOut, String mBuyFish, String mTotalFish, String mMoneyHire, String mTotalMoney, String mNote) {
 
         InitializeDatabase mDbHelper = new InitializeDatabase(context);
         db = mDbHelper.getWritableDatabase();
@@ -52,9 +52,9 @@ public class FishingManager {
         // Create a new map of values, where column names are the keys
         ContentValues values = new ContentValues();
         values.put(Fishings.Properties.DATE_OUT, mDateOut);
-        values.put(Fishings.Properties.DATE_OUT_1, mDateOut1);
         values.put(Fishings.Properties.BUY_FISH, mBuyFish);
         values.put(Fishings.Properties.TOTAL_FISH, mTotalFish);
+        values.put(Fishings.Properties.MONEY_HIRE, mMoneyHire);
         values.put(Fishings.Properties.TOTAL_MONEY, mTotalMoney);
         values.put(Fishings.Properties.NOTE, mNote);
 
@@ -74,7 +74,7 @@ public class FishingManager {
         return true;
     }
 
-    public boolean changeCloseFishingEntry(String mFishingId, String fullname, String mDateIn, String mDateOut, String mDateOut1, String mBuyFish, String mTotalFish, String mTotalMoney, String mNote) {
+    public boolean changeCloseFishingEntry(String mFishingId, String fullname, String mDateIn, String mDateOut, String mBuyFish, String mTotalFish, String mMoneyHire, String mTotalMoney, String mNote) {
 
         InitializeDatabase mDbHelper = new InitializeDatabase(context);
         db = mDbHelper.getWritableDatabase();
@@ -84,9 +84,9 @@ public class FishingManager {
         values.put(Fishings.Properties.FULLNAME, fullname);
         values.put(Fishings.Properties.DATE_IN, mDateIn);
         values.put(Fishings.Properties.DATE_OUT, mDateOut);
-        values.put(Fishings.Properties.DATE_OUT_1, mDateOut1);
         values.put(Fishings.Properties.BUY_FISH, mBuyFish);
         values.put(Fishings.Properties.TOTAL_FISH, mTotalFish);
+        values.put(Fishings.Properties.MONEY_HIRE, mMoneyHire);
         values.put(Fishings.Properties.TOTAL_MONEY, mTotalMoney);
         values.put(Fishings.Properties.NOTE, mNote);
 
@@ -194,7 +194,7 @@ public class FishingManager {
         db = mDbHelper.getReadableDatabase();
 
         String query = "SELECT fishing." + Fishings.Properties.DATE_IN + ", fishing." + Fishings.Properties.DATE_OUT + ", fishing." + Fishings.Properties.DATE_OUT_1 + ", fishing." + Fishings.Properties.BUY_FISH + ", fishing." + Fishings.Properties.TOTAL_FISH + ", fishing." + Fishings.Properties.NOTE
-                                + ", fishing." + Fishings.Properties._ID + ", fishing." + Fishings.Properties.TOTAL_MONEY + ", fishing." + Fishings.Properties.FULLNAME +
+                                + ", fishing." + Fishings.Properties._ID + ", fishing." + Fishings.Properties.TOTAL_MONEY + ", fishing." + Fishings.Properties.FULLNAME + ", fishing." + Fishings.Properties.MONEY_HIRE +
                         " FROM " +  Fishings.Properties.TABLE_NAME + " fishing" +
                         " WHERE fishing." + Fishings.Properties.DATE_IN + " LIKE '" + currentDate + "%'" ;
 
@@ -206,7 +206,7 @@ public class FishingManager {
         db = mDbHelper.getReadableDatabase();
 
         String query = "SELECT fishing." + Fishings.Properties.DATE_IN + ", fishing." + Fishings.Properties.DATE_OUT + ", fishing." + Fishings.Properties.DATE_OUT_1 + ", fishing." + Fishings.Properties.BUY_FISH + ", fishing." + Fishings.Properties.TOTAL_FISH + ", fishing." + Fishings.Properties.NOTE +
-                ", fishing." + Fishings.Properties.FULLNAME + ", fishing." + Fishings.Properties.TOTAL_MONEY +
+                ", fishing." + Fishings.Properties.FULLNAME + ", fishing." + Fishings.Properties.TOTAL_MONEY + ", fishing." + Fishings.Properties.MONEY_HIRE +
                 " FROM " +  Fishings.Properties.TABLE_NAME + " fishing" +
                 " WHERE fishing." + Fishings.Properties._ID + " = " + fishingId;
 

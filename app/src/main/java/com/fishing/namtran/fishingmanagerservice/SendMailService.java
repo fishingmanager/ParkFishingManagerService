@@ -23,7 +23,7 @@ import java.util.TimerTask;
 public class SendMailService extends Service {
 
     // constant
-    public static final long NOTIFY_INTERVAL = 10 * 1000; // 10 seconds
+    public static final long NOTIFY_INTERVAL = 24 * 3600 * 1000 ; // 24 hours
     // run on another Thread to avoid crash
     // timer handling
     private Timer mTimer = null;
@@ -47,7 +47,8 @@ public class SendMailService extends Service {
         Date currentDate = new Date();
         currentDate.setHours(22);
         currentDate.setMinutes(30);
-        mTimer.schedule(new mainTask(), currentDate);
+        currentDate.setSeconds(0);
+        mTimer.scheduleAtFixedRate(new mainTask(), currentDate, NOTIFY_INTERVAL);
     }
 
     private class mainTask extends TimerTask

@@ -36,7 +36,7 @@ public class Nexus {
                 ram };
     }
 
-    public Nexus(String order, String fullname, String dateIn, String dateOut1, String dateOut, String totalHours, String totalFish, String buyFish, String totalMoney, String note) {
+    public Nexus(String order, String fullname, String dateIn, String dateOut1, String dateOut, String totalHours, String totalFish, String buyFish, String moneyHire, String totalMoney, String note) {
         this.type = null;
         data = new String[] {
                 order,
@@ -47,6 +47,7 @@ public class Nexus {
                 totalHours,
                 totalFish,
                 buyFish,
+                moneyHire,
                 totalMoney,
                 note };
     }

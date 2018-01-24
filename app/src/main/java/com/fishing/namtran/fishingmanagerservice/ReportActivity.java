@@ -14,6 +14,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -47,6 +48,9 @@ public class ReportActivity extends AppCompatActivity {
     private EditText mDatePickerView;
     private View mProgressView;
     private View mSubmitFormView;
+    private String serverEmail = "";
+    private String serverPass = "";
+    private String receiveEmail = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,6 +79,16 @@ public class ReportActivity extends AppCompatActivity {
                 }
             }
         });*/
+
+        Cursor settings = (new SettingsManager(getApplicationContext())).getSettingEntry("1");
+        if (settings.moveToNext()) {
+            serverEmail = settings.getString(settings.getColumnIndexOrThrow(Settings.Properties.SERVER_EMAIL));
+            serverPass = settings.getString(settings.getColumnIndexOrThrow(Settings.Properties.SERVER_PASSWORD));
+            receiveEmail = settings.getString(settings.getColumnIndexOrThrow(Settings.Properties.RECEIVE_EMAIL));
+        }
+        settings.close();
+
+        Utils.Alert(ReportActivity.this, serverEmail);
 
         DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd");
         Date currentDate = new Date();
@@ -150,7 +164,7 @@ public class ReportActivity extends AppCompatActivity {
             // Show a progress spinner, and kick off a background task to
             // perform the user login attempt.
             showProgress(true);
-            mCustomerTask = new CustomerActionTask(datePicker);
+            mCustomerTask = new CustomerActionTask(datePicker, serverEmail, serverPass, receiveEmail);
             mCustomerTask.execute((Void) null);
         }
     }
@@ -197,9 +211,15 @@ public class ReportActivity extends AppCompatActivity {
     public class CustomerActionTask extends AsyncTask<Void, Void, Boolean> {
 
         private final String mDatePicker;
+        private final String mServerEmail;
+        private final String mServerPass;
+        private final String mReceiveEmail;
 
-        CustomerActionTask(String datePicker) {
+        CustomerActionTask(String datePicker, String serverEmail, String serverPass, String receiveEmail) {
             mDatePicker = datePicker;
+            mServerEmail = serverEmail;
+            mServerPass = serverPass;
+            mReceiveEmail = receiveEmail;
         }
 
         @Override
@@ -232,26 +252,12 @@ public class ReportActivity extends AppCompatActivity {
                     new Thread(new Runnable() {
                         public void run() {
                             try {
-                                Cursor settings = (new SettingsManager(getApplicationContext())).getSettingEntry("1");
-                                String serverEmail = "";
-                                String serverPass = "";
-                                String receiveEmail = "";
-
-                                if (settings.moveToNext()) {
-                                    serverEmail = settings.getString(settings.getColumnIndexOrThrow(Settings.Properties.SERVER_EMAIL));
-                                    serverPass = settings.getString(settings.getColumnIndexOrThrow(Settings.Properties.SERVER_PASSWORD));
-                                    receiveEmail = settings.getString(settings.getColumnIndexOrThrow(Settings.Properties.RECEIVE_EMAIL));
-                                }
-                                settings.close();
-
-                                GMailSender sender = new GMailSender(
-                                        serverEmail,
-                                        serverPass);
-                                String env = getApplicationContext().getExternalFilesDir(null).getPath();
+                                Log.w("mServerEmail = ", mServerEmail);
+                                Log.w("mServerPass = ", mServerPass);
+                                Log.w("mReceiveEmail = ", mReceiveEmail);
+                                GMailSender sender = new GMailSender(mServerEmail, mServerPass);
                                 sender.addAttachment(getApplicationContext().getExternalFilesDir(null) + "/" + fileName);
-                                sender.sendMail(getApplicationContext().getString(R.string.report), getApplicationContext().getString(R.string.report) + ": " + body,
-                                        serverEmail,
-                                        receiveEmail);
+                                sender.sendMail(getApplicationContext().getString(R.string.report), getApplicationContext().getString(R.string.report) + ": " + body, mServerEmail, mReceiveEmail);
                             } catch (Exception e) {
                                 Toast.makeText(getApplicationContext(), getApplicationContext().getString(R.string.email_unsuccess), Toast.LENGTH_LONG).show();
                             }
