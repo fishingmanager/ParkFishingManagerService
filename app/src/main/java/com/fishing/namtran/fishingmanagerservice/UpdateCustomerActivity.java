@@ -219,7 +219,7 @@ public class UpdateCustomerActivity extends AppCompatActivity {
 
                     totalHours.setText(String.format("%02d:%02d", diffHours, diffMinutes));
 
-                    if(diffHours > 3) {
+                    if(diffHours > 3 || diffMinutes > 0) {
                         totalFee = point3Hours + ((diffHours - 3) * extra1Hour) + (extra1Hour / 60) * diffMinutes;
                     } else
                     {

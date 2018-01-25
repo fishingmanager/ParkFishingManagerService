@@ -252,9 +252,6 @@ public class ReportActivity extends AppCompatActivity {
                     new Thread(new Runnable() {
                         public void run() {
                             try {
-                                Log.w("mServerEmail = ", mServerEmail);
-                                Log.w("mServerPass = ", mServerPass);
-                                Log.w("mReceiveEmail = ", mReceiveEmail);
                                 GMailSender sender = new GMailSender(mServerEmail, mServerPass);
                                 sender.addAttachment(getApplicationContext().getExternalFilesDir(null) + "/" + fileName);
                                 sender.sendMail(getApplicationContext().getString(R.string.report), getApplicationContext().getString(R.string.report) + ": " + body, mServerEmail, mReceiveEmail);
