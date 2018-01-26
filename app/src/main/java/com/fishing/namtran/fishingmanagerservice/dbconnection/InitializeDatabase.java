@@ -114,12 +114,12 @@ public class InitializeDatabase extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(SQL_CREATE_SETTINGS_TABLE);
         db.execSQL(SQL_CREATE_USERS_TABLE);
-        db.execSQL(SQL_CREATE_FISHINGS_TABLE_V2);
+        db.execSQL(SQL_CREATE_FISHINGS_TABLE);
 
         db.execSQL(SQL_CREATE_USERS_RECORDS_1);
         db.execSQL(SQL_CREATE_USERS_RECORDS_2);
         db.execSQL(SQL_CREATE_SETTINGS_RECORDS);
-        db.execSQL(SQL_CREATE_FISHINGS_RECORDS);
+        //db.execSQL(SQL_CREATE_FISHINGS_RECORDS);
     }
 
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
@@ -133,14 +133,20 @@ public class InitializeDatabase extends SQLiteOpenHelper {
 
         //onCreate(db);
 
+        if(newVersion > oldVersion)
+        {
+            createPatchVersion2(db);
+        }
+
+        /*
         if(checkDataBase())
         {
-            /*switch (newVersion)
+            switch (newVersion)
             {
                 case 2:
                     createPatchVersion2(db);
                     break;
-            }*/
+            }
             createPatchVersion2(db);
         }
         else
@@ -157,6 +163,7 @@ public class InitializeDatabase extends SQLiteOpenHelper {
             db.execSQL(SQL_CREATE_USERS_RECORDS_2);
             db.execSQL(SQL_CREATE_SETTINGS_RECORDS);
         }
+        */
     }
 
     public void onDowngrade(SQLiteDatabase db, int oldVersion, int newVersion) {

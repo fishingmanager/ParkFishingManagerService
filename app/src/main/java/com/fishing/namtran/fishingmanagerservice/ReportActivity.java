@@ -88,8 +88,6 @@ public class ReportActivity extends AppCompatActivity {
         }
         settings.close();
 
-        Utils.Alert(ReportActivity.this, serverEmail);
-
         DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd");
         Date currentDate = new Date();
         mDatePickerView.setText(dateFormat.format(currentDate));
