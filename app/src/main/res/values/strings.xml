@@ -49,9 +49,12 @@
     <string name="receive_email">Email Nhận</string>
     <string name="access">Truy Cập</string>
     <string name="email_unsuccess">Gửi Email Không Thành Công</string>
+    <string name="error_input_time">Lỗi Nhập Giờ</string>
+    <string name="alert">Thông Báo</string>
 
     <string name="customer_manager">Quản Lý KH</string>
     <string name="report">Báo Cáo</string>
+    <string name="auto_report">Báo Cáo Tự Động</string>
     <string name="add_customer">Thêm KH</string>
     <string name="logout">Thoát</string>
     <string name="settings">Cài Đặt</string>

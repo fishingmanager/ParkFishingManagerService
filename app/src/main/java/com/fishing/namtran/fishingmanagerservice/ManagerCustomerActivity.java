@@ -34,9 +34,8 @@ public class ManagerCustomerActivity extends AppCompatActivity { //BaseMenuActiv
         //setSupportActionBar(toolbar);
         loadFishingEntriesData();
 
-        if(!isMyServiceRunning(SendMailService.class)) {
-            startService(new Intent(this, SendMailService.class));
-        }
+        //Start service sending email
+        startService(new Intent(this, SendMailService.class));
     }
 
     @Override

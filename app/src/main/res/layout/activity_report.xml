@@ -39,11 +39,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="@string/date"
-                    android:imeActionId="@+id/login"
-                    android:imeActionLabel="@string/action_submit_short"
-                    android:imeOptions="actionUnspecified"
                     android:maxLines="1"
-                    android:inputType="date"
+                    android:editable="false"
                     android:singleLine="true" />
 
             </android.support.design.widget.TextInputLayout>

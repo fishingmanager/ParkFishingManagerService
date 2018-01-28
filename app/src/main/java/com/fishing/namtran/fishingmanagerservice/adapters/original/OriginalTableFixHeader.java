@@ -113,7 +113,8 @@ public class OriginalTableFixHeader {
             @Override
             public void onLongClickItem(Nexus item, OriginalCellViewGroup viewGroup, int row, int column) {
                 if(column == 2 && item.data[column + 2] == "" && row != adapter.getRowCount()-1) {
-                    GetTimePicker(viewGroup, adapter, item);
+                    //GetTimePicker(viewGroup, adapter, item);
+                    GetDateOut1(viewGroup, adapter, item);
                 }
             }
         };
@@ -173,6 +174,28 @@ public class OriginalTableFixHeader {
                     }
                 }, mHour, mMinute, true);
         timePickerDialog.show();
+    }
+
+    private void GetDateOut1(final OriginalCellViewGroup viewGroup, final OriginalTableFixHeaderAdapter adapter, final Nexus item)
+    {
+        Date roundDate = Utils.GetCurrentTimeByRoundFiveMinutes();
+        String dateOut1 = String.format("%02d:%02d", roundDate.getHours(), roundDate.getMinutes());
+        viewGroup.textView.setText(dateOut1);
+
+        int fishingId = 0;
+        DateFormat sqlDateFormat = new SimpleDateFormat("yyyy/MM/dd");
+        Date currentDate = new Date();
+        Cursor fishingEntries = (new FishingManager(context)).getFishingEntries(sqlDateFormat.format(currentDate));
+
+        while (fishingEntries.moveToNext()) {
+            if ((fishingEntries.getPosition() + 1) == Integer.valueOf(item.data[0])) {
+                fishingId = fishingEntries.getInt(fishingEntries.getColumnIndexOrThrow(Fishings.Properties._ID));
+                break;
+            }
+        }
+        fishingEntries.close();
+        (new FishingManager(context)).updateDateOut1(String.valueOf(fishingId), (new SimpleDateFormat("yyyy/MM/dd").format(currentDate) + " " + dateOut1 + ":00"));
+        adapter.setBody(getBody());
     }
 
     private void callLoginDialog(final Class<?> _class, final String fishingId)

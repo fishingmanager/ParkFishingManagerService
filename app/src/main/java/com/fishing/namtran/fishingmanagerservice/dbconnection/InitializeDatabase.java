@@ -82,7 +82,7 @@ public class InitializeDatabase extends SQLiteOpenHelper {
                     Settings.Properties.RECEIVE_EMAIL + "," +
                     Settings.Properties.PACKAGE_FISHING + "," +
                     Settings.Properties.PRICE_FISHING + "," +
-                    Settings.Properties.PRICE_BUY_FISH + ") VALUES ( 1, 'parkfishingmanagerservice@gmail.com', 't260gOm3g', 'parkfishingmanagerservice@gmail.com', 3, 120000, 12000 ); ";
+                    Settings.Properties.PRICE_BUY_FISH + ") VALUES ( 1, 'fishingmanagerservice@gmail.com', '#TKG283kcal', 'fishingmanagerservice@gmail.com', 3, 120000, 12000 ); ";
 
     private static final String SQL_CREATE_FISHINGS_RECORDS =
             "INSERT INTO " + Fishings.Properties.TABLE_NAME + " (" +
@@ -114,7 +114,7 @@ public class InitializeDatabase extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(SQL_CREATE_SETTINGS_TABLE);
         db.execSQL(SQL_CREATE_USERS_TABLE);
-        db.execSQL(SQL_CREATE_FISHINGS_TABLE);
+        db.execSQL(SQL_CREATE_FISHINGS_TABLE_V2);
 
         db.execSQL(SQL_CREATE_USERS_RECORDS_1);
         db.execSQL(SQL_CREATE_USERS_RECORDS_2);

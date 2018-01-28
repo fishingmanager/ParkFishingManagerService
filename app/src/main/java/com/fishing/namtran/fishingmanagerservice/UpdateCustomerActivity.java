@@ -3,6 +3,8 @@ package com.fishing.namtran.fishingmanagerservice;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
+import android.app.TimePickerDialog;
+import android.content.Context;
 import android.database.Cursor;
 import android.support.v7.app.AppCompatActivity;
 import android.os.AsyncTask;
@@ -12,11 +14,13 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TimePicker;
 
 import com.fishing.namtran.fishingmanagerservice.dbconnection.FishingManager;
 import com.fishing.namtran.fishingmanagerservice.dbconnection.Fishings;
@@ -67,8 +71,6 @@ public class UpdateCustomerActivity extends AppCompatActivity {
         setContentView(R.layout.activity_update_customer);
 
         mFishingId = getIntent().getStringExtra("fishingId");
-
-        // Set up the login form.
         mFullNameView = (AutoCompleteTextView) findViewById(R.id.fullname);
         mDatInView = (EditText) findViewById(R.id.date_in);
         mDateOutView = (EditText) findViewById(R.id.date_out);
@@ -121,7 +123,19 @@ public class UpdateCustomerActivity extends AppCompatActivity {
             }
         });
 
-        GetTimeDateOutAndCalculateFeeFishing();
+        //Date Out 1
+        Date roundDate = Utils.GetCurrentTimeByRoundFiveMinutes();
+        GetTimeDateOutAndCalculateFeeFishing(roundDate.getHours(), roundDate.getMinutes());
+        mDateOutView.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                if(MotionEvent.ACTION_UP == event.getAction())
+                {
+                    GetTimePickerForDateOut1();
+                }
+                return false;
+            }
+        });
 
         mTotalFishView.addTextChangedListener(new TextWatcher() {
             @Override
@@ -192,13 +206,38 @@ public class UpdateCustomerActivity extends AppCompatActivity {
         });
     }
 
-    public void GetTimeDateOutAndCalculateFeeFishing()
+    private void GetTimePickerForDateOut1()
     {
+        // Get Current Time
+        Date roundDate = Utils.GetCurrentTimeByRoundFiveMinutes();
+        int mHour = roundDate.getHours();
+        int mMinute = roundDate.getMinutes();
+
+        // Launch Time Picker Dialog
+        TimePickerDialog timePickerDialog = new TimePickerDialog(this,
+                new TimePickerDialog.OnTimeSetListener() {
+
+                    @Override
+                    public void onTimeSet(TimePicker view, int hourOfDay,
+                                          int minute) {
+                        GetTimeDateOutAndCalculateFeeFishing(hourOfDay, minute);
+                    }
+                }, mHour, mMinute, true);
+        timePickerDialog.show();
+    }
+
+    private void GetTimeDateOutAndCalculateFeeFishing(int hours, int minutes)
+    {
+        // Get Current Time
+        final Calendar currentTime = Calendar.getInstance();
+        currentTime.set(Calendar.HOUR_OF_DAY, hours);
+        currentTime.set(Calendar.MINUTE, minutes);
+
         EditText totalHours = (EditText) mTotalHoursView;
         EditText dateOut = (EditText) mDateOutView;
 
         DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
-        Date currentDate = Utils.GetCurrentTimeByRoundFiveMinutes();
+        Date currentDate = currentTime.getTime();
         String fullDateOut = dateFormat.format(currentDate);
         dateOut.setText(String.format("%02d:%02d", currentDate.getHours(), currentDate.getMinutes()));
 
@@ -209,8 +248,9 @@ public class UpdateCustomerActivity extends AppCompatActivity {
                 long diffHours = diff / (60 * 60 * 1000);
 
                 if(diffHours < 0 || diffMinutes < 0) {
-                    dateOut.setText("");
-                    Utils.Alert(UpdateCustomerActivity.this, "ERROR !");
+                    Date roundDate = Utils.GetCurrentTimeByRoundFiveMinutes();
+                    dateOut.setText(String.format("%02d:%02d", roundDate.getHours(), roundDate.getMinutes()));
+                    Utils.Alert(UpdateCustomerActivity.this, getApplicationContext().getString(R.string.error_input_time));
                 }
                 else {
                     long totalFee = 0;

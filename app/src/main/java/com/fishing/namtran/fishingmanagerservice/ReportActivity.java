@@ -240,10 +240,9 @@ public class ReportActivity extends AppCompatActivity {
                 FishingManager fishing = new FishingManager(getApplicationContext());
                 Cursor cursor = fishing.getFishingEntries(mDatePicker);
 
-                final DateFormat dateFormat = new SimpleDateFormat("yyyy_MM_dd_HH_mm_ss");
                 Date currentDate = new Date();
-                final String fileName = "BaoCao_" + dateFormat.format(currentDate) + ".xlsx";
-                final String body = (new SimpleDateFormat("yyyy/MM/dd HH:mm:ss")).format(currentDate);
+                final String fileName = "BaoCaoCuoiNgay.xlsx";
+                final String body = (new SimpleDateFormat(mDatePicker + " HH:mm:ss")).format(currentDate);
 
                 if(Utils.saveExcelFile(getApplicationContext(), fileName, cursor))
                 {

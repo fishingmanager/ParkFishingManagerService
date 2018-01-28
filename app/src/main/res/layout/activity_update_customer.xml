@@ -71,7 +71,7 @@
                     android:layout_height="wrap_content"
                     android:hint="@string/date_out"
                     android:maxLines="1"
-                    android:enabled="false"
+                    android:editable="false"
                     android:singleLine="true" />
 
             </android.support.design.widget.TextInputLayout>
